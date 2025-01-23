@@ -4,14 +4,18 @@ import { TodoType, useTodoStore } from "@/utils/store";
 import TodoStatus from "./todo-status";
 import { cn } from "@/utils/util";
 import { Fragment, useEffect, useState } from "react";
-import iconCross from "@/public/assets/images/icon-cross.svg";
 import Image from "next/image";
 import MobileStatus from "./mobile-status";
 import { AnimatePresence, Reorder, motion } from "framer-motion";
+import { EditTaskModal } from "./edit-task-modal";
+import iconCross from "../../public/assets/icon-cross.svg";
+import iconEdit from "../../public/assets/icon-edit.svg";
 
 function TodoList() {
   const [filteredTodos, setFilteredTodos] = useState<TodoType[]>([]);
   const { todos, completeTodo, status, deleteTodo } = useTodoStore();
+  const [editingTodo, setEditingTodo] = useState<TodoType | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (status === "active") {
@@ -27,6 +31,11 @@ function TodoList() {
       setFilteredTodos(todos);
     }
   }, [status, todos]);
+
+  const handleEdit = (todo: TodoType) => {
+    setEditingTodo(todo);
+    setIsEditModalOpen(true);
+  };
 
   return (
     <Fragment>
@@ -52,11 +61,12 @@ function TodoList() {
                   exit={{ opacity: 0, y: -30, transition: { duration: 0.25 } }}
                   value={todo}
                   key={todo.id}
-                  className="group/item relative flex cursor-grabbing items-center gap-6 border-b border-x-light-veryGrayishBlue px-6 py-5 dark:border-dark-ultraDarkGrayishBlue"
+                  // The group/item class enables hover functionality for the todo item
+                  className="group/item relative flex cursor-grabbing items-start gap-6 border-b border-x-light-veryGrayishBlue px-6 py-5 dark:border-dark-ultraDarkGrayishBlue"
                 >
                   <span
                     className={cn(
-                      "size-6 rounded-full cursor-pointer flex transition-all justify-center items-center",
+                      "mt-1 size-6 rounded-full cursor-pointer flex transition-all justify-center items-center",
                       todo.completed
                         ? "bg-gradient-to-br from-gradientOne to-gradientTwo"
                         : "border border-light-veryGrayishBlue dark:border-dark-ultraDarkGrayishBlue hover:border-gradient-to-br from-gradientOne to-gradientTwo"
@@ -81,26 +91,53 @@ function TodoList() {
                       </svg>
                     )}
                   </span>
-                  <span
-                    className={cn(
-                      "inline-block capitalize text-xs lg:text-lg text-light-veryDarkGrayishBlue cursor-pointer dark:text-dark-lightGrayishBlue",
-                      todo.completed
-                        ? "line-through text-light-lightGrayishBlue dark:text-dark-veryDarkGrayishBlue"
-                        : ""
+                  <div className="flex-1 space-y-2">
+                    <span
+                      className={cn(
+                        "inline-block capitalize text-xs lg:text-lg text-light-veryDarkGrayishBlue cursor-pointer dark:text-dark-lightGrayishBlue",
+                        todo.completed
+                          ? "line-through text-light-lightGrayishBlue dark:text-dark-veryDarkGrayishBlue"
+                          : ""
+                      )}
+                      onClick={() => completeTodo(todo.id)}
+                    >
+                      {todo.title}
+                    </span>
+                    {todo.description && (
+                      <p className={cn(
+                        "text-xs text-light-darkGrayishBlue dark:text-dark-darkGrayishBlue",
+                        todo.completed ? "line-through" : ""
+                      )}>
+                        {todo.description}
+                      </p>
                     )}
-                    onClick={() => completeTodo(todo.id)}
-                  >
-                    {todo.text}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteTodo(todo.id);
-                    }}
-                    className="invisible absolute right-6 group-hover/item:visible"
-                  >
-                    <Image src={iconCross} alt="cross icon" />
-                  </button>
+                    {todo.dueDate && (
+                      <p className={cn(
+                        "text-xs text-light-darkGrayishBlue dark:text-dark-darkGrayishBlue",
+                        todo.completed ? "line-through" : ""
+                      )}>
+                        Due: {todo.dueDate}
+                      </p>
+                    )}
+                  </div>
+                  <div className="invisible absolute right-6 top-5 flex items-center gap-3 group-hover/item:visible">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(todo);
+                      }}
+                    >
+                      <Image src={iconEdit} alt="edit icon" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteTodo(todo.id);
+                      }}
+                    >
+                      <Image src={iconCross} alt="cross icon" />
+                    </button>
+                  </div>
                 </Reorder.Item>
               ))}
             </AnimatePresence>
@@ -109,6 +146,14 @@ function TodoList() {
         <TodoStatus />
       </div>
       <MobileStatus />
+      <EditTaskModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingTodo(null);
+        }}
+        todo={editingTodo}
+      />
     </Fragment>
   );
 }
