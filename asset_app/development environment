@@ -1,0 +1,129 @@
+# Development Environment Details
+
+## 1. Environment Context
+- Node Type: Chromia Node (Local Development)
+- Node Version: 
+  * Chromia CLI (chr): v0.22.2
+  * Rell: v0.14.3
+  * Postchain: v3.25.0
+  * EIF: v0.6.5
+  * Java: v22.0.2
+- State Management: WebSocket connections via @chromia/ft4
+- Data Refresh Patterns: 
+  * Using SWR with configurable refresh intervals
+  * Default refresh interval: 5-20 seconds
+  * Revalidation on focus enabled
+- Network Configuration:
+  * WebSocket Strategy: SingleEndpoint (FailoverStrategy)
+  * Attempts per endpoint: 1
+  * Sticky node discovery: enabled
+  * Connection: Local node at process.env.NEXT_PUBLIC_NODE_URL
+  * Blockchain RID: process.env.NEXT_PUBLIC_BRID
+
+## 2. Architecture Context
+- Frontend Framework: React with Next.js
+- State Management Libraries: 
+  * SWR for data fetching
+  * @chromia/react for Chromia integration
+- Backend/Blockchain Integration:
+  * @chromia/ft4 for token operations
+  * Wagmi for Web3 integration
+- Authentication Flow:
+  * MetaMask for Web3 authentication
+  * FT4 session management
+- Data Flow Patterns:
+  * Real-time updates via WebSocket
+  * Client-side caching with SWR
+
+## 3. Existing Implementation Context
+- Related Components:
+  * Token staking/unstaking forms
+  * Asset management components
+- Established Patterns:
+  * Transaction builder pattern for operations
+  * Mutation callbacks for state updates
+- Known Limitations:
+  * State sync delays requiring manual revalidation
+  * Node restart sometimes needed for state reset
+- Performance Considerations:
+  * Transaction Processing Times (Local Development):
+    - Mint operations: ~7-8 seconds
+    - Transfer operations: ~2-3 seconds
+    - Stake/Unstake operations: ~2-3 seconds
+  * Note: Times may vary based on network conditions and node load
+
+## 4. Testing Context
+- Test Environment:
+  * Rell test framework using `chr test`
+  * Integration tests with blockchain operations
+  * Test keypairs provided by framework (alice, trudy)
+- Test Data Requirements:
+  * FT4 accounts with auth descriptors
+  * Token balances for testing operations
+  * Test assets with predefined properties:
+    - Name, symbol, decimals, icon URL
+    - Initial supply amounts
+- Test Coverage:
+  * Account creation and registration
+  * Asset minting and registration
+  * Token transfers between accounts
+  * Staking and unstaking operations
+  * Error cases and validation
+- Known Edge Cases:
+  * State synchronization issues
+  * WebSocket connection stability
+  * Multiple asset creation restrictions
+  * Insufficient balance validations
+
+## 5. Dependencies Context
+- External Services:
+  * Local Chromia node
+  * MetaMask wallet
+- Library Versions:
+  * @chromia/ft4: ^1.0.0
+  * @chromia/react: ^0.3.0
+  * @chromia/ui-kit: ^0.7.0
+  * wagmi: ^2.12.8
+  * postchain-client: ^1.17.0
+  * viem: 2.x
+- Configuration Requirements:
+  * clientConfig for Postchain client
+- Integration Points:
+  * WebSocket connections to Chromia node
+  * MetaMask wallet connection
+
+## 6. Error Handling Context
+- Expected Failure Modes:
+  * Transaction failures
+  * Node connection issues
+- Recovery Mechanisms:
+  * Rate limiting with configurable points system
+  * Recovery time: 5000ms default
+  * Max points: 10 default
+  * Points at account creation: 1
+- Logging Requirements:
+  * Console error logging implemented
+  * Transaction error tracking
+  * Rate limit state logging
+  * Authentication state logging
+- User Feedback:
+  * Success/Error modals
+  * Loading states during transactions
+  * Error messages with specific failure reasons
+
+## 7. Performance Context
+- Expected Load:
+  * Rate limited to 10 operations per 5 seconds per account
+  * Configurable through rate_limit_config
+- Response Time Requirements:
+  * WebSocket refresh interval: 5-20 seconds
+  * Transaction confirmation: 2-8 seconds
+  * State updates: Within next refresh interval
+- Resource Constraints:
+  * Maximum auth descriptors per account: 10
+  * Maximum rules per auth descriptor: 8
+  * Rate limiting points system
+- Optimization Requirements:
+  * State caching implemented
+  * Manual revalidation after transactions
+  * Sticky node discovery for connection stability
