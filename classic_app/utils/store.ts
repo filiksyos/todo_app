@@ -19,6 +19,11 @@ export type TodoStore = {
   deleteTodo: (id: string) => void;
   setStatus: (status: string) => void;
   editTodo: (id: string, updatedTodo: TodoType) => void;
+  showAllTodos: () => void;
+  activeTodos: () => void;
+  completedTodos: () => void;
+  sortByDueDate: () => void;
+  reorderTodos: (reorderedTodos: TodoType[]) => void;
 };
 
 export const useTodoStore = create<TodoStore>()(
@@ -57,6 +62,18 @@ export const useTodoStore = create<TodoStore>()(
             todo.id === id ? { ...updatedTodo } : todo
           ),
         })),
+      showAllTodos: () => set({ status: 'all' }),
+      activeTodos: () => set({ status: 'active' }),
+      completedTodos: () => set({ status: 'completed' }),
+      sortByDueDate: () => set((state) => ({
+        todos: [...state.todos].sort((a, b) => {
+          // Handle cases where dueDate is empty
+          if (!a.dueDate) return 1;  // Move items without due date to the end
+          if (!b.dueDate) return -1;
+          return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
+        })
+      })),
+      reorderTodos: (reorderedTodos) => set({ todos: reorderedTodos }),
     }),
     {
       name: "todo-storage",

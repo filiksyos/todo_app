@@ -2,18 +2,25 @@
 
 import { useTodoStore } from "@/utils/store";
 import { cn } from "@/utils/util";
+import { useEffect } from "react";
 
 function TodoStatus() {
   const {
-    clearCompleted,
     status,
     showAllTodos,
     activeTodos,
     completedTodos,
     todos,
+    sortByDueDate,
   } = useTodoStore();
 
   const itemsLeft = todos?.filter((item) => !item.completed);
+
+  useEffect(() => {
+    console.log('Current status:', status);
+    console.log('Current todos:', todos);
+  }, [status, todos]);
+
   return (
     <div className="flex items-center justify-between  px-6 py-5">
       <span className="inline-block text-sm text-light-darkGrayishBlue dark:text-dark-darkGrayishBlue">
@@ -53,13 +60,13 @@ function TodoStatus() {
         >
           completed
         </button>
+        <button
+          onClick={sortByDueDate}
+          className="text-sm font-bold capitalize transition-all text-light-darkGrayishBlue hover:text-light-veryDarkGrayishBlue dark:text-dark-darkGrayishBlue dark:hover:text-light-veryGrayishBlue"
+        >
+          sort by date
+        </button>
       </div>
-      <button
-        onClick={clearCompleted}
-        className="text-xs font-bold capitalize text-light-darkGrayishBlue transition-all hover:text-light-veryDarkGrayishBlue dark:text-dark-darkGrayishBlue dark:hover:text-light-veryGrayishBlue lg:text-sm"
-      >
-        clear completed
-      </button>
     </div>
   );
 }

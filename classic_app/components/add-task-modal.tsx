@@ -19,7 +19,8 @@ export function AddTaskModal({ isOpen, onClose }: AddTaskModalProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      addTodo(title.trim(), description.trim(), dueDate.trim());
+      const formattedDate = dueDate ? new Date(dueDate).toISOString() : "";
+      addTodo(title.trim(), description.trim(), formattedDate);
       setTitle("");
       setDescription("");
       setDueDate("");
@@ -50,10 +51,9 @@ export function AddTaskModal({ isOpen, onClose }: AddTaskModalProps) {
         </div>
         <div className="space-y-2">
           <input
-            type="text"
+            type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            placeholder="Due date (Optional)"
             className="w-full rounded-md px-4 py-2 text-sm text-black shadow-lg focus:outline-none dark:bg-dark-ultraDarkGrayishBlue dark:text-white"
           />
         </div>

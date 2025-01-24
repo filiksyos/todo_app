@@ -13,28 +13,33 @@ import iconEdit from "../../public/assets/icon-edit.svg";
 
 function TodoList() {
   const [filteredTodos, setFilteredTodos] = useState<TodoType[]>([]);
-  const { todos, completeTodo, status, deleteTodo } = useTodoStore();
+  const { todos, completeTodo, status, deleteTodo, reorderTodos } = useTodoStore();
   const [editingTodo, setEditingTodo] = useState<TodoType | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
-    if (status === "active") {
-      const activeTodos = todos.filter((todo) => !todo.completed);
-      setFilteredTodos(activeTodos);
-    } else if (status === "completed") {
-      const completedTodos = todos.filter((todo) => todo.completed);
-      setFilteredTodos(completedTodos);
-      if (completedTodos.length === 0) {
-        setFilteredTodos(todos);
-      }
-    } else {
-      setFilteredTodos(todos);
-    }
+    console.log('Filtering with status:', status);
+    const newFilteredTodos = status === "active" 
+      ? todos.filter((todo) => !todo.completed)
+      : status === "completed"
+      ? todos.filter((todo) => todo.completed)
+      : todos;
+    
+    console.log('Filtered todos:', newFilteredTodos);
+    setFilteredTodos(newFilteredTodos);
   }, [status, todos]);
 
   const handleEdit = (todo: TodoType) => {
     setEditingTodo(todo);
     setIsEditModalOpen(true);
+  };
+
+  const handleReorder = (newOrder: TodoType[]) => {
+    setFilteredTodos(newOrder);
+    // If we're showing all todos, update the store
+    if (status === "all") {
+      reorderTodos(newOrder);
+    }
   };
 
   return (
@@ -44,7 +49,7 @@ function TodoList() {
           <Reorder.Group
             axis="y"
             values={filteredTodos}
-            onReorder={setFilteredTodos}
+            onReorder={handleReorder}
             className="overflow-hidden"
           >
             <AnimatePresence>

@@ -22,18 +22,24 @@ export function EditTaskModal({ isOpen, onClose, todo }: EditTaskModalProps) {
     if (todo) {
       setTitle(todo.title);
       setDescription(todo.description || "");
-      setDueDate(todo.dueDate || "");
+      if (todo.dueDate) {
+        const date = new Date(todo.dueDate);
+        setDueDate(date.toISOString().split('T')[0]);
+      } else {
+        setDueDate("");
+      }
     }
   }, [todo]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (todo && title.trim()) {
+      const formattedDate = dueDate ? new Date(dueDate).toISOString() : "";
       editTodo(todo.id, {
         ...todo,
         title: title.trim(),
         description: description.trim(),
-        dueDate: dueDate.trim(),
+        dueDate: formattedDate,
       });
       onClose();
     }
@@ -62,10 +68,9 @@ export function EditTaskModal({ isOpen, onClose, todo }: EditTaskModalProps) {
         </div>
         <div className="space-y-2">
           <input
-            type="text"
+            type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            placeholder="Due date (Optional)"
             className="w-full rounded-md px-4 py-2 text-sm text-black shadow-lg focus:outline-none dark:bg-dark-ultraDarkGrayishBlue dark:text-white"
           />
         </div>
