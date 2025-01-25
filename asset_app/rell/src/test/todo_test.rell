@@ -1,0 +1,156 @@
+@test module;
+
+import lib.ft4.core.accounts.{ account, Account };
+import lib.ft4.auth;
+
+
+function create_test_account(): account {
+    val acc = create account(type = "test", id = x"0000");
+    return acc;
+}
+
+function authenticate_as_account(acc: account) {
+    auth.authenticate_as(acc);
+}
+
+function get_tasks_for_owner(owner: account) = task @* {
+    .owner == owner
+} @* {
+    id: .id,
+    title: .title,
+    description: .description,
+    due_date: .due_date,
+    completed: .completed,
+    created_at: .created_at
+} @sort_by(.created_at);
+
+function create_test_task(
+    owner: account,
+    title: text,
+    description: text = "",
+    due_date: integer = 0
+) {
+    authenticate_as_account(owner);
+    create task(
+        id = (owner.id, title, op_context.last_block_time).hash(),
+        owner = owner,
+        title = title,
+        description = description,
+        due_date = due_date,
+        completed = false
+    );
+}
+
+function test_create_task() {
+    val owner = create_test_account();
+    
+    create_test_task(owner, "Test Task", "Test Description", 1234567890);
+    
+    val tasks = get_tasks_for_owner(owner);
+    assert_equals(tasks.size(), 1);
+    
+    val task = tasks[0];
+    assert_equals(task.title, "Test Task");
+    assert_equals(task.description, "Test Description");
+    assert_equals(task.due_date, 1234567890);
+    assert_equals(task.completed, false);
+}
+
+function test_update_task() {
+    val owner = create_test_account();
+    create_test_task(owner, "Original Task");
+    
+    val tasks = get_tasks_for_owner(owner);
+    val task = task @ { .id == tasks[0].id };
+    
+    authenticate_as_account(owner);
+    task.title = "Updated Task";
+    task.description = "Updated Description";
+    task.due_date = 1234567890;
+    
+    val updated_tasks = get_tasks_for_owner(owner);
+    val updated_task = updated_tasks[0];
+    
+    assert_equals(updated_task.title, "Updated Task");
+    assert_equals(updated_task.description, "Updated Description");
+    assert_equals(updated_task.due_date, 1234567890);
+}
+
+function test_toggle_task() {
+    val owner = create_test_account();
+    create_test_task(owner, "Test Task");
+    
+    val tasks = get_tasks_for_owner(owner);
+    val task = task @ { .id == tasks[0].id };
+    
+    authenticate_as_account(owner);
+    task.completed = true;
+    
+    val updated_tasks = get_tasks_for_owner(owner);
+    assert_equals(updated_tasks[0].completed, true);
+    
+    task.completed = false;
+    
+    val final_tasks = get_tasks_for_owner(owner);
+    assert_equals(final_tasks[0].completed, false);
+}
+
+function test_delete_task() {
+    val owner = create_test_account();
+    create_test_task(owner, "Test Task");
+    
+    val tasks = get_tasks_for_owner(owner);
+    assert_equals(tasks.size(), 1);
+    
+    val task_to_delete = tasks[0];
+    authenticate_as_account(owner);
+    delete task @ { .id == task_to_delete.id };
+    
+    val updated_tasks = get_tasks_for_owner(owner);
+    assert_equals(updated_tasks.size(), 0);
+}
+
+function test_filtered_tasks() {
+    val owner = create_test_account();
+    
+    // Create multiple tasks with different completion states
+    create_test_task(owner, "Task 1");
+    create_test_task(owner, "Task 2");
+    create_test_task(owner, "Task 3");
+    
+    val tasks = get_tasks_for_owner(owner);
+    authenticate_as_account(owner);
+    
+    val task1 = task @ { .id == tasks[0].id };
+    val task2 = task @ { .id == tasks[1].id };
+    task1.completed = true;
+    task2.completed = true;
+    
+    // Test completed tasks
+    val completed_tasks = task @* { .owner == owner, .completed == true };
+    assert_equals(completed_tasks.size(), 2);
+    
+    // Test active tasks
+    val active_tasks = task @* { .owner == owner, .completed == false };
+    assert_equals(active_tasks.size(), 1);
+    
+    // Test all tasks
+    val all_tasks = task @* { .owner == owner };
+    assert_equals(all_tasks.size(), 3);
+}
+
+function test_task_ownership() {
+    val owner1 = create_test_account();
+    val owner2 = create_test_account();
+    
+    create_test_task(owner1, "Owner 1 Task");
+    create_test_task(owner2, "Owner 2 Task");
+    
+    val owner1_tasks = get_tasks_for_owner(owner1);
+    val owner2_tasks = get_tasks_for_owner(owner2);
+    
+    assert_equals(owner1_tasks.size(), 1);
+    assert_equals(owner2_tasks.size(), 1);
+    assert_equals(owner1_tasks[0].title, "Owner 1 Task");
+    assert_equals(owner2_tasks[0].title, "Owner 2 Task");
+} 

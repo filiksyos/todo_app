@@ -1,6 +1,6 @@
 "use client";
 
-import { TaskStatus } from "@/hooks/use-tasks";
+import type { TaskStatus } from "@/hooks/use-tasks";
 import { cn } from "@/utils/cn";
 
 interface TaskStatusProps {

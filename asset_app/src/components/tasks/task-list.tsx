@@ -1,19 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import React from 'react';
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
-import { useTasks, Task } from "@/hooks/use-tasks";
+import { useTasks } from "@/hooks/use-tasks";
 import { TaskItem } from "./task-item";
 import { TaskStatus } from "./task-status";
 import { AddTaskModal } from "@/modals/add-task-modal";
-import { EditTaskModal } from "@/modals/edit-task-modal";
-import Button from "@/components/chromia-ui-kit/button";
-import { Plus } from "lucide-react";
+import { CardLoading } from '@/components/layout/card-loading';
 
 export function TaskList() {
   const {
     tasks,
     status,
+    isLoading,
     addTask,
     toggleTask,
     deleteTask,
@@ -21,29 +20,22 @@ export function TaskList() {
     setStatus,
   } = useTasks();
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-
   const totalTasks = tasks.length;
   const activeTasks = tasks.filter(task => !task.completed).length;
 
-  const handleEdit = (task: Task) => {
-    setEditingTask(task);
+  const handleEdit = (id: string, title: string, description?: string, dueDate?: string) => {
+    editTask(id, title, description, dueDate);
   };
 
-  const handleEditSubmit = (id: string, title: string, description: string, dueDate: string) => {
-    editTask(id, title, description, dueDate);
-    setEditingTask(null);
-  };
+  if (isLoading) {
+    return <CardLoading />;
+  }
 
   return (
     <Card className="w-full max-w-lg">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <h2 className="text-lg font-semibold">Tasks</h2>
-        <Button onClick={() => setIsAddModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add New
-        </Button>
+        <AddTaskModal onSubmit={addTask} />
       </CardHeader>
       
       <CardContent className="space-y-2">
@@ -71,19 +63,6 @@ export function TaskList() {
           activeTasks={activeTasks}
         />
       </CardFooter>
-
-      <AddTaskModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onAddTask={addTask}
-      />
-
-      <EditTaskModal
-        isOpen={!!editingTask}
-        onClose={() => setEditingTask(null)}
-        task={editingTask}
-        onEditTask={handleEditSubmit}
-      />
     </Card>
   );
 } 

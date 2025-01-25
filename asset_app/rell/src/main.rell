@@ -1,172 +1,99 @@
 module;
 
 import lib.ft4.auth;
-import lib.ft4.accounts.strategies.open;
-import lib.ft4.core.accounts.{ account, Account, create_account_with_auth, single_sig_auth_descriptor };
-import lib.ft4.external.assets.{ get_asset_balances };
-import lib.ft4.assets.{ asset, Unsafe, balance };
-
+import lib.ft4.core.accounts.{ account, Account };
 
 @extend(auth.auth_handler)
 function () = auth.add_auth_handler(
     flags = ["T"]
 );
 
-operation register_and_mint_asset(
-    asset_name: text,
-    symbol: text,
-    decimals: integer,
-    amount: big_integer,
-    icon_url: text
+// Entity to store tasks
+entity task {
+    key id: byte_array;
+    key owner: account;
+    mutable title: text;
+    mutable description: text;
+    mutable due_date: integer;
+    mutable completed: boolean;
+    created_at: integer = op_context.last_block_time;
+}
+
+// Operation to create a new task
+operation create_task(
+    title: text,
+    description: text,
+    due_date: integer
 ) {
-    val owner_account = auth.authenticate();
-    require(get_asset_balances(owner_account.id, 10, null).data.empty(), "One asset allowed");
-    functions.register_and_mint_asset(owner_account, asset_name, symbol, decimals, amount, icon_url);
-}
-
-
-namespace functions {
-    function register_and_mint_asset(
-        owner_account: account,
-        asset_name: name,
-        symbol: text,
-        decimals: integer,
-        amount: big_integer,
-        icon_url: text
-    ) {
-
-   // Derive id of the asset
-        val asset_id = (asset_name, chain_context.blockchain_rid).hash();
-
-   // check if the asset already exists
-        val asset = asset @ ? { .id == asset_id };
-        if (not empty(asset)) return;
-
-        val asset_created = Unsafe.register_asset(asset_name, symbol, decimals, chain_context.blockchain_rid, icon_url);
-        Unsafe.mint(owner_account, asset_created, amount);
-    }
-}
-// Entity to track staked assets for each account
-// - account and asset form a composite key to ensure unique stakes per account-asset pair
-// - amount tracks how many tokens are staked
-// - staked_at records the timestamp of the last stake operation
-entity stake {
-    key account: account, asset: asset;
-    mutable amount: big_integer;
-    mutable staked_at: integer = op_context.last_block_time;
-}
-
-// Entity to track unstaking requests
-entity unstake_request {
-    key account: account, asset: asset;
-    mutable amount: big_integer;
-    mutable requested_at: integer = op_context.last_block_time;
-}
-
-// Operation to initiate unstaking of tokens
-operation unstake_asset(asset_id: byte_array, amount: big_integer) {
-    // Authenticate the user performing the unstake
-    val owner_account = auth.authenticate();
-    val asset = asset @ { .id == asset_id };
+    val owner = auth.authenticate();
+    val task_id = (owner.id, title, op_context.last_block_time).hash();
     
-    // Validate the unstake amount is positive
-    require(amount > 0, "Amount must be positive");
-    
-    // Get user's stake
-    val user_stake = stake @ { owner_account, asset };
-    require(user_stake.amount >= amount, "Insufficient staked balance");
-    
-    // Deduct from stake
-    user_stake.amount -= amount;
-    
-    // Return tokens to user's balance
-    val balance = balance @ { owner_account, asset };
-    balance.amount += amount;
-}
-
-// Query to get unstaking request info for a specific account and asset
-query get_unstake_info(account_id: byte_array, asset_id: byte_array): (amount: big_integer, requested_at: integer) {
-    val acc = account @ { .id == account_id };
-    val ast = asset @ { .id == asset_id };
-    val request = unstake_request @? { acc, ast };
-    return (
-        amount = if (empty(request)) 0L else request.amount,
-        requested_at = if (empty(request)) 0 else request.requested_at
+    create task(
+        id = task_id,
+        owner = owner,
+        title = title,
+        description = description,
+        due_date = due_date,
+        completed = false
     );
 }
 
-// Operation to stake tokens of a specific asset
-// Parameters:
-// - asset_id: identifier of the asset to stake
-// - amount: quantity of tokens to stake
-operation stake_asset(asset_id: byte_array, amount: big_integer) {
-    // Authenticate the user performing the stake
-    val owner_account = auth.authenticate();
-    val asset = asset @ { .id == asset_id };
+// Operation to update a task
+operation update_task(
+    task_id: byte_array,
+    title: text,
+    description: text,
+    due_date: integer
+) {
+    val owner = auth.authenticate();
+    val task = task @ { .id == task_id, owner };
     
-    // Validate the stake amount is positive
-    require(amount > 0, "Amount must be positive");
-    
-    // Check if user has sufficient balance to stake
-    val balance = balance @ { owner_account, asset };
-    require(balance.amount >= amount, "Insufficient balance");
-    
-    // Deduct staked amount from user's balance
-    balance.amount -= amount;
-    
-    // Check if user already has a stake for this asset
-    val existing_stake = stake @? { owner_account, asset };
-    if (empty(existing_stake)) {
-        // Create new stake if none exists
-        create stake(owner_account, asset, amount);
-    } else {
-        // Add to existing stake and update timestamp
-        existing_stake.amount += amount;
-        existing_stake.staked_at = op_context.last_block_time;
-    }
+    task.title = title;
+    task.description = description;
+    task.due_date = due_date;
 }
 
-// Query to get staking information for a specific account and asset
-// Returns:
-// - amount: total staked amount (0 if no stake exists)
-// - staked_at: timestamp of last stake (0 if no stake exists)
-query get_stake_info(account_id: byte_array, asset_id: byte_array): (amount: big_integer, staked_at: integer) {
+// Operation to toggle task completion
+operation toggle_task(task_id: byte_array) {
+    val owner = auth.authenticate();
+    val task = task @ { .id == task_id, owner };
+    task.completed = not task.completed;
+}
+
+// Operation to delete a task
+operation delete_task(task_id: byte_array) {
+    val owner = auth.authenticate();
+    delete task @ { .id == task_id, owner };
+}
+
+// Query to get all tasks for a user
+query get_tasks(account_id: byte_array) = {
     val acc = account @ { .id == account_id };
-    val ast = asset @ { .id == asset_id };
-    val stake = stake @? { acc, ast };
-    return (
-        amount = if (empty(stake)) 0L else stake.amount,
-        staked_at = if (empty(stake)) 0 else stake.staked_at
-    );
+    return from task t 
+           where t.owner == acc 
+           order by t.created_at desc 
+           select {
+               id: t.id,
+               title: t.title,
+               description: t.description,
+               due_date: t.due_date,
+               completed: t.completed,
+               created_at: t.created_at
+           };
 }
 
-// Query to calculate yield for a specific stake
-query get_yield_info(account_id: byte_array, asset_id: byte_array): (amount: big_integer) {
+// Query to get filtered tasks (all, active, or completed)
+query get_filtered_tasks(account_id: byte_array, completed: boolean?) = {
     val acc = account @ { .id == account_id };
-    val ast = asset @ { .id == asset_id };
-    val stake = stake @? { acc, ast };
-    
-    return (
-        // Simple 10% yield calculation
-        amount = if (empty(stake)) 0L else (stake.amount * 10L) / 100L
-    );
-}
-
-// Operation to claim yield
-operation claim_yield(asset_id: byte_array) {
-    // Authenticate the user claiming the yield
-    val owner_account = auth.authenticate();
-    val asset = asset @ { .id == asset_id };
-    
-    // Get user's stake
-    val user_stake = stake @ { owner_account, asset };
-    require(user_stake.amount > 0, "No active stake found");
-    
-    // Calculate yield (10% of staked amount)
-    val yield_amount = (user_stake.amount * 10L) / 100L;
-    require(yield_amount > 0, "No yield to claim");
-    
-    // Add yield to user's balance
-    val balance = balance @ { owner_account, asset };
-    balance.amount += yield_amount;
+    return from task t 
+           where t.owner == acc and (completed == null or t.completed == completed)
+           order by t.created_at desc 
+           select {
+               id: t.id,
+               title: t.title,
+               description: t.description,
+               due_date: t.due_date,
+               completed: t.completed,
+               created_at: t.created_at
+           };
 }
