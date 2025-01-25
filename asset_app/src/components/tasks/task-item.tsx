@@ -1,7 +1,7 @@
 "use client";
 
 import { Task } from "@/hooks/use-tasks";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit } from "lucide-react";
 import Button from "@/components/chromia-ui-kit/button";
 import { cn } from "@/utils/cn";
 
@@ -9,9 +9,10 @@ interface TaskItemProps {
   task: Task;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit: (task: Task) => void;
 }
 
-export function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
+export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
   return (
     <div className="group flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50">
       <button
@@ -36,22 +37,42 @@ export function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
           </svg>
         )}
       </button>
-      <span
-        className={cn(
-          "flex-1 text-sm transition-colors",
-          task.completed && "text-muted-foreground line-through"
+      <div className="flex-1">
+        <span
+          className={cn(
+            "text-sm transition-colors",
+            task.completed && "text-muted-foreground line-through"
+          )}
+        >
+          {task.title}
+        </span>
+        {task.description && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            {task.description}
+          </p>
         )}
-      >
-        {task.title}
-      </span>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => onDelete(task.id)}
-        className="invisible group-hover:visible"
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
+        {task.dueDate && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Due: {new Date(task.dueDate).toLocaleDateString()}
+          </p>
+        )}
+      </div>
+      <div className="invisible flex gap-2 group-hover:visible">
+        <Button
+          variant="ghost"
+          size="s"
+          onClick={() => onEdit(task)}
+        >
+          <Edit className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="s"
+          onClick={() => onDelete(task.id)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 } 

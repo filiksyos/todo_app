@@ -1,10 +1,14 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
-import { useTasks } from "@/hooks/use-tasks";
-import { TaskInput } from "./task-input";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
+import { useTasks, Task } from "@/hooks/use-tasks";
 import { TaskItem } from "./task-item";
 import { TaskStatus } from "./task-status";
+import { AddTaskModal } from "@/modals/add-task-modal";
+import { EditTaskModal } from "@/modals/edit-task-modal";
+import Button from "@/components/chromia-ui-kit/button";
+import { Plus } from "lucide-react";
 
 export function TaskList() {
   const {
@@ -13,23 +17,43 @@ export function TaskList() {
     addTask,
     toggleTask,
     deleteTask,
+    editTask,
     setStatus,
   } = useTasks();
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
   const totalTasks = tasks.length;
   const activeTasks = tasks.filter(task => !task.completed).length;
 
+  const handleEdit = (task: Task) => {
+    setEditingTask(task);
+  };
+
+  const handleEditSubmit = (id: string, title: string, description: string, dueDate: string) => {
+    editTask(id, title, description, dueDate);
+    setEditingTask(null);
+  };
+
   return (
-    <Card className="w-full max-w-lg space-y-4 p-4">
-      <TaskInput onAddTask={addTask} />
+    <Card className="w-full max-w-lg">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <h2 className="text-lg font-semibold">Tasks</h2>
+        <Button onClick={() => setIsAddModalOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add New
+        </Button>
+      </CardHeader>
       
-      <div className="space-y-2">
+      <CardContent className="space-y-2">
         {tasks.map(task => (
           <TaskItem
             key={task.id}
             task={task}
             onToggle={toggleTask}
             onDelete={deleteTask}
+            onEdit={handleEdit}
           />
         ))}
         {tasks.length === 0 && (
@@ -37,13 +61,28 @@ export function TaskList() {
             No tasks yet. Add one above!
           </p>
         )}
-      </div>
+      </CardContent>
 
-      <TaskStatus
-        status={status}
-        onStatusChange={setStatus}
-        totalTasks={totalTasks}
-        activeTasks={activeTasks}
+      <CardFooter>
+        <TaskStatus
+          status={status}
+          onStatusChange={setStatus}
+          totalTasks={totalTasks}
+          activeTasks={activeTasks}
+        />
+      </CardFooter>
+
+      <AddTaskModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAddTask={addTask}
+      />
+
+      <EditTaskModal
+        isOpen={!!editingTask}
+        onClose={() => setEditingTask(null)}
+        task={editingTask}
+        onEditTask={handleEditSubmit}
       />
     </Card>
   );
