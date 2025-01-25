@@ -1,4 +1,11 @@
-import { useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
+import { op } from "@chromia/ft4";
+import {
+  useFtAccounts,
+  useFtSession,
+  usePostchainClient,
+} from "@chromia/react";
+import { publicClientConfig as clientConfig } from "@/utils/generate-client-config";
 
 export interface Task {
   id: string;
@@ -11,11 +18,22 @@ export interface Task {
 
 export type TaskStatus = 'all' | 'active' | 'completed';
 
-export function useTasks() {
+export function useTasks(initialStatus: TaskStatus = 'all') {
+  const [status, setStatus] = useState<TaskStatus>(initialStatus);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [status, setStatus] = useState<TaskStatus>('all');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const addTask = (title: string, description?: string, dueDate?: string) => {
+  const { data: ftAccounts } = useFtAccounts({ clientConfig });
+  const { data: session } = useFtSession(
+    ftAccounts?.length ? { clientConfig, account: ftAccounts[0] } : null,
+  );
+  const { data: client } = usePostchainClient({ config: clientConfig });
+
+  const addTask = useCallback(async (title: string, description?: string, dueDate?: string) => {
+    if (!session || !ftAccounts?.length) return;
+    setError(null);
+
     const newTask: Task = {
       id: crypto.randomUUID(),
       title,
@@ -24,44 +42,133 @@ export function useTasks() {
       completed: false,
       createdAt: new Date().toISOString(),
     };
-    setTasks(prev => [...prev, newTask]);
-  };
 
-  const toggleTask = (id: string) => {
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
+    try {
+      await session
+        .transactionBuilder()
+        .add(
+          op(
+            "create_todo",
+            newTask.id,
+            newTask.title,
+            newTask.description ?? "",
+            newTask.dueDate ?? "",
+            newTask.createdAt,
+          ),
+        )
+        .buildAndSend();
+      await fetchTasks();
+    } catch (error) {
+      console.error('Error adding task:', error);
+      setError('Failed to add task');
+    }
+  }, [session, ftAccounts]);
 
-  const deleteTask = (id: string) => {
-    setTasks(prev => prev.filter(task => task.id !== id));
-  };
+  const toggleTask = useCallback(async (id: string) => {
+    if (!session) return;
+    setError(null);
 
-  const editTask = (id: string, title: string, description?: string, dueDate?: string) => {
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === id
-          ? { ...task, title, description, dueDate }
-          : task
-      )
-    );
-  };
+    try {
+      await session
+        .transactionBuilder()
+        .add(op("toggle_todo", id))
+        .buildAndSend();
+      await fetchTasks();
+    } catch (error) {
+      console.error('Error toggling task:', error);
+      setError('Failed to toggle task');
+    }
+  }, [session]);
 
-  const filteredTasks = status === 'active'
-    ? tasks.filter(task => !task.completed)
-    : status === 'completed'
-    ? tasks.filter(task => task.completed)
-    : tasks;
+  const deleteTask = useCallback(async (id: string) => {
+    if (!session) return;
+    setError(null);
+
+    try {
+      await session
+        .transactionBuilder()
+        .add(op("delete_todo", id))
+        .buildAndSend();
+      await fetchTasks();
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      setError('Failed to delete task');
+    }
+  }, [session]);
+
+  const editTask = useCallback(async (id: string, title: string, description?: string, dueDate?: string) => {
+    if (!session) return;
+    setError(null);
+
+    try {
+      await session
+        .transactionBuilder()
+        .add(
+          op(
+            "edit_todo",
+            id,
+            title,
+            description ?? "",
+            dueDate ?? "",
+          ),
+        )
+        .buildAndSend();
+      await fetchTasks();
+    } catch (error) {
+      console.error('Error editing task:', error);
+      setError('Failed to edit task');
+    }
+  }, [session]);
+
+  const fetchTasks = useCallback(async () => {
+    if (!session || !ftAccounts?.length) return;
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const tasks = await session.client.query("get_todos", {
+        account_id: ftAccounts[0].id,
+      }) as Array<[string, string, string | null, string | null, boolean, string]>;
+
+      const mappedTasks = tasks.map(([id, title, description, dueDate, completed, createdAt]) => ({
+        id,
+        title,
+        description: description || undefined,
+        dueDate: dueDate || undefined,
+        completed,
+        createdAt,
+      }));
+
+      setTasks(mappedTasks);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+      setError('Failed to fetch tasks');
+      setTasks([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [session, ftAccounts]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
+  const filteredTasks = tasks.filter(task => {
+    if (status === 'active') return !task.completed;
+    if (status === 'completed') return task.completed;
+    return true;
+  });
 
   return {
     tasks: filteredTasks,
     status,
+    setStatus,
+    isLoading,
+    error,
     addTask,
     toggleTask,
     deleteTask,
     editTask,
-    setStatus,
+    refresh: fetchTasks,
   };
 } 
