@@ -1,3 +1,4 @@
+//Manages the viewholder of each task
 "use client";
 
 import { TodoType, useTodoStore } from "@/utils/store";
