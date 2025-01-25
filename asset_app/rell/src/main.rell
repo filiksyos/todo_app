@@ -194,10 +194,10 @@ operation edit_todo(
     task.due_date = if (empty(due_date)) "" else due_date;
 }
 
-query get_todos(account_id: byte_array): list<[text, text, text, text, boolean, text]> {
+query get_todos(account_id: byte_array): list<(text, text, text, text, boolean, text)> {
     val acc = account @ { .id == account_id };
     return todo_task @* { .owner == acc } (
-        [.id, .title, .description, .due_date, .completed, .created_at]
+        (.id, .title, .description, .due_date, .completed, .created_at)
     );
 }
 
