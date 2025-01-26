@@ -65,7 +65,7 @@ export const useChromiaAccount = ({
 
       // Create authentication descriptor with Account and Transfer permissions
       const ad = createSingleSigAuthDescriptorRegistration(
-        [AuthFlag.Account, AuthFlag.Transfer],
+        [AuthFlag.Account, AuthFlag.Transfer, "0"],
         keyStore.id,
       );
 

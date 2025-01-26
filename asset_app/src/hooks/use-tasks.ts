@@ -1,10 +1,16 @@
 import { useCallback, useState, useEffect } from 'react';
-import { op } from "@chromia/ft4";
+import { 
+  op, 
+  createKeyStoreInteractor,
+  LoginOptions,
+  Session
+} from "@chromia/ft4";
 import {
   useFtAccounts,
-  useFtSession,
+  useEvmKeyStore,
   usePostchainClient,
 } from "@chromia/react";
+import { IClient } from "postchain-client";
 import { publicClientConfig as clientConfig } from "@/utils/generate-client-config";
 
 export interface Task {
@@ -23,12 +29,31 @@ export function useTasks(initialStatus: TaskStatus = 'all') {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [session, setSession] = useState<any>(null);
 
   const { data: ftAccounts } = useFtAccounts({ clientConfig });
-  const { data: session } = useFtSession(
-    ftAccounts?.length ? { clientConfig, account: ftAccounts[0] } : null,
-  );
   const { data: client } = usePostchainClient({ config: clientConfig });
+  const { data: keyStore } = useEvmKeyStore();
+
+  // Initialize session with zero-threat flag
+  useEffect(() => {
+    const initSession = async () => {
+      if (!client || !keyStore || !ftAccounts?.length) return;
+
+      try {
+        const keyStoreInteractor = createKeyStoreInteractor(client as IClient, keyStore);
+        const { session: newSession } = await keyStoreInteractor.login({
+          accountId: ftAccounts[0].id
+        });
+        setSession(newSession);
+      } catch (error) {
+        console.error('Error initializing session:', error);
+        setError('Failed to initialize session');
+      }
+    };
+
+    initSession();
+  }, [client, keyStore, ftAccounts]);
 
   const addTask = useCallback(async (title: string, description?: string, dueDate?: string) => {
     if (!session || !ftAccounts?.length) return;
