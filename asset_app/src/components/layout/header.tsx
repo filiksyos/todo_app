@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
-import logo from "../../assets/logo.svg";
 import { ConnectWallet } from "./wallet";
+import Title from "./title";
+import Theme from "./theme";
 
 const Header = () => {
   const classNameLeftCube = cn(
@@ -23,10 +23,13 @@ const Header = () => {
           classNameRightCube,
         )}
       >
-        <Link href="/">
-          <Image alt="logo" className="h-7 w-auto" src={logo} />
+        <Link href="/" className="flex items-center">
+          <Title />
         </Link>
-        <ConnectWallet />
+        <div className="flex items-center gap-4">
+          <Theme />
+          <ConnectWallet />
+        </div>
       </div>
     </div>
   );
