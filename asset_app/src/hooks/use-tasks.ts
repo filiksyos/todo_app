@@ -17,9 +17,11 @@ export interface Task {
 }
 
 export type TaskStatus = 'all' | 'active' | 'completed';
+export type SortOrder = 'none' | 'date';
 
 export function useTasks(initialStatus: TaskStatus = 'all') {
   const [status, setStatus] = useState<TaskStatus>(initialStatus);
+  const [sortOrder, setSortOrder] = useState<SortOrder>('none');
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -157,12 +159,19 @@ export function useTasks(initialStatus: TaskStatus = 'all') {
     if (status === 'active') return !task.completed;
     if (status === 'completed') return task.completed;
     return true;
+  }).sort((a, b) => {
+    if (sortOrder === 'date') {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+    return 0;
   });
 
   return {
     tasks: filteredTasks,
     status,
     setStatus,
+    sortOrder,
+    setSortOrder,
     isLoading,
     error,
     addTask,

@@ -14,11 +14,13 @@ export function TaskList() {
   const {
     tasks,
     status,
+    sortOrder,
     addTask,
     toggleTask,
     deleteTask,
     editTask,
     setStatus,
+    setSortOrder,
   } = useTasks();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -66,7 +68,9 @@ export function TaskList() {
       <CardFooter>
         <TaskStatus
           status={status}
+          sortOrder={sortOrder}
           onStatusChange={setStatus}
+          onSortChange={setSortOrder}
           totalTasks={totalTasks}
           activeTasks={activeTasks}
         />

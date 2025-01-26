@@ -1,18 +1,22 @@
 "use client";
 
-import { TaskStatus } from "@/hooks/use-tasks";
+import type { TaskStatus, SortOrder } from "@/hooks/use-tasks";
 import { cn } from "@/utils/cn";
 
 interface TaskStatusProps {
   status: TaskStatus;
+  sortOrder: SortOrder;
   onStatusChange: (status: TaskStatus) => void;
+  onSortChange: (order: SortOrder) => void;
   totalTasks: number;
   activeTasks: number;
 }
 
 export function TaskStatus({
   status,
+  sortOrder,
   onStatusChange,
+  onSortChange,
   totalTasks,
   activeTasks,
 }: TaskStatusProps) {
@@ -21,7 +25,7 @@ export function TaskStatus({
       <span className="text-sm text-muted-foreground">
         {activeTasks} item{activeTasks !== 1 ? "s" : ""} left
       </span>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-4">
         <button
           onClick={() => onStatusChange("all")}
           className={cn(
@@ -48,6 +52,15 @@ export function TaskStatus({
           )}
         >
           Completed
+        </button>
+        <button
+          onClick={() => onSortChange(sortOrder === 'date' ? 'none' : 'date')}
+          className={cn(
+            "text-sm font-medium transition-colors hover:text-primary",
+            sortOrder === "date" ? "text-primary" : "text-muted-foreground"
+          )}
+        >
+          Sort by date
         </button>
       </div>
       <span className="text-sm text-muted-foreground">
