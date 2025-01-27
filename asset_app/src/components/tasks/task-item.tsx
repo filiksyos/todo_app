@@ -4,6 +4,7 @@ import { Task } from "@/hooks/use-tasks";
 import { Trash2, Edit } from "lucide-react";
 import Button from "@/components/chromia-ui-kit/button";
 import { cn } from "@/utils/cn";
+import { motion } from "framer-motion";
 
 interface TaskItemProps {
   task: Task;
@@ -18,10 +19,10 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
       <button
         onClick={() => onToggle(task.id)}
         className={cn(
-          "flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors hover:border-primary",
+          "mt-1 size-6 rounded-full cursor-pointer flex transition-all justify-center items-center",
           task.completed
-            ? "border-primary bg-primary text-primary-foreground"
-            : "border-muted-foreground bg-transparent"
+            ? "bg-gradient-to-br from-gradientOne to-gradientTwo"
+            : "border border-light-veryGrayishBlue dark:border-dark-ultraDarkGrayishBlue hover:border-gradient-to-br from-gradientOne to-gradientTwo"
         )}
       >
         {task.completed && (
@@ -29,12 +30,16 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
             xmlns="http://www.w3.org/2000/svg"
             width="11"
             height="9"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="transition-opacity"
           >
-            <path d="M1 4.304L3.696 7l6-6" />
+            <motion.path
+              fill="none"
+              stroke="#FFF"
+              strokeWidth="2"
+              d="M1 4.304L3.696 7l6-6"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.5 }}
+            />
           </svg>
         )}
       </button>

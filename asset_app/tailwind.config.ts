@@ -64,6 +64,8 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        gradientOne: "#57ddff",
+        gradientTwo: "#c058f3",
       },
       borderRadius: {
         lg: "var(--radius)",
