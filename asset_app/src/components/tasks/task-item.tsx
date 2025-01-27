@@ -15,22 +15,18 @@ interface TaskItemProps {
 
 export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
   return (
-    <div className="group flex items-center gap-4 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50">
+    <div className="group flex items-center gap-4 rounded-lg border border-border bg-card p-4 hover:bg-accent/50">
       <button
         onClick={() => onToggle(task.id)}
         className={cn(
-          "mt-1 size-6 rounded-full cursor-pointer flex transition-all justify-center items-center",
+          "mt-1 size-6 rounded-full cursor-pointer flex justify-center items-center",
           task.completed
             ? "bg-gradient-to-br from-gradientOne to-gradientTwo"
             : "border border-light-veryGrayishBlue dark:border-dark-ultraDarkGrayishBlue hover:border-gradient-to-br from-gradientOne to-gradientTwo"
         )}
       >
         {task.completed && (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="11"
-            height="9"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="9">
             <motion.path
               fill="none"
               stroke="#FFF"
@@ -44,12 +40,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
         )}
       </button>
       <div className="flex-1">
-        <span
-          className={cn(
-            "text-sm transition-colors",
-            task.completed && "text-muted-foreground line-through"
-          )}
-        >
+        <span className={cn("text-sm", task.completed && "text-muted-foreground line-through")}>
           {task.title}
         </span>
         {task.description && (
@@ -64,18 +55,10 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
         )}
       </div>
       <div className="invisible flex gap-2 group-hover:visible">
-        <Button
-          variant="ghost"
-          size="s"
-          onClick={() => onEdit(task)}
-        >
+        <Button variant="ghost" size="s" onClick={() => onEdit(task)}>
           <Edit className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="s"
-          onClick={() => onDelete(task.id)}
-        >
+        <Button variant="ghost" size="s" onClick={() => onDelete(task.id)}>
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>

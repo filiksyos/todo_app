@@ -2,8 +2,9 @@
 
 import { FormEvent, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import Button from "@/components/chromia-ui-kit/button";
-import Input from "@/components/chromia-ui-kit/input";
 
 interface AddTaskModalProps {
   isOpen: boolean;
@@ -30,9 +31,9 @@ export function AddTaskModal({ isOpen, onClose, onAddTask }: AddTaskModalProps) 
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent>
+      <DialogContent className="bg-card text-card-foreground">
         <DialogHeader>
-          <DialogTitle>Add New Task</DialogTitle>
+          <DialogTitle className="text-foreground">Add New Task</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input

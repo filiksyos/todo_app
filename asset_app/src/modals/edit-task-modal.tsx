@@ -3,8 +3,9 @@
 import { FormEvent, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Button from "@/components/chromia-ui-kit/button";
-import Input from "@/components/chromia-ui-kit/input";
+import { Input } from "@/components/ui/input";
 import { Task } from "@/hooks/use-tasks";
+import { cn } from "@/lib/utils";
 
 interface EditTaskModalProps {
   isOpen: boolean;
@@ -37,9 +38,9 @@ export function EditTaskModal({ isOpen, onClose, task, onEditTask }: EditTaskMod
 
   return (
     <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent>
+      <DialogContent className="bg-card text-card-foreground">
         <DialogHeader>
-          <DialogTitle>Edit Task</DialogTitle>
+          <DialogTitle className="text-foreground">Edit Task</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
