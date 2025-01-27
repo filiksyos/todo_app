@@ -18,10 +18,10 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
       <button
         onClick={() => onToggle(task.id)}
         className={cn(
-          "flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors",
+          "flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors hover:border-primary",
           task.completed
             ? "border-primary bg-primary text-primary-foreground"
-            : "border-muted-foreground"
+            : "border-muted-foreground bg-transparent"
         )}
       >
         {task.completed && (
@@ -32,6 +32,7 @@ export function TaskItem({ task, onToggle, onDelete, onEdit }: TaskItemProps) {
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
+            className="transition-opacity"
           >
             <path d="M1 4.304L3.696 7l6-6" />
           </svg>

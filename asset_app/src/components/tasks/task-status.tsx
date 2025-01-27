@@ -21,11 +21,8 @@ export function TaskStatus({
   activeTasks,
 }: TaskStatusProps) {
   return (
-    <div className="flex items-center justify-between border-t border-border px-4 py-3">
-      <span className="text-sm text-muted-foreground">
-        {activeTasks} item{activeTasks !== 1 ? "s" : ""} left
-      </span>
-      <div className="flex items-center gap-4">
+    <div className="flex items-center justify-center border-t border-border px-6 py-4">
+      <div className="flex items-center gap-10">
         <button
           onClick={() => onStatusChange("all")}
           className={cn(
@@ -63,9 +60,6 @@ export function TaskStatus({
           Sort by date
         </button>
       </div>
-      <span className="text-sm text-muted-foreground">
-        Total: {totalTasks}
-      </span>
     </div>
   );
-} 
+}

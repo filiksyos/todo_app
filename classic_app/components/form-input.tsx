@@ -10,7 +10,7 @@ function FormInput() {
 
   return (
     <div className="relative flex items-center justify-between rounded-md bg-white px-6 py-4 shadow-lg dark:bg-dark-veryDarkDesaturatedBlue">
-      <span className="text-sm text-light-veryDarkGrayishBlue dark:text-dark-lightGrayishBlue lg:text-lg">
+      <span className="text-lg text-light-veryDarkGrayishBlue dark:text-dark-lightGrayishBlue lg:text-xl">
         Tasks
       </span>
       <button

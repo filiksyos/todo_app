@@ -39,42 +39,46 @@ export function TaskList() {
   };
 
   return (
-    <Card className="w-full max-w-lg">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <h2 className="text-lg font-semibold">Tasks</h2>
-        <Button onClick={() => setIsAddModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add New
-        </Button>
-      </CardHeader>
-      
-      <CardContent className="space-y-2">
-        {tasks.map(task => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            onToggle={toggleTask}
-            onDelete={deleteTask}
-            onEdit={handleEdit}
-          />
-        ))}
-        {tasks.length === 0 && (
-          <p className="text-center text-sm text-muted-foreground">
-            No tasks yet. Add one above!
-          </p>
-        )}
-      </CardContent>
+    <div className="flex flex-col gap-6">
+      <Card className="w-full max-w-lg bg-white shadow-lg dark:bg-dark-veryDarkDesaturatedBlue">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <h2 className="text-sm font-bold lg:text-xl">Tasks</h2>
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add New
+          </Button>
+        </CardHeader>
+      </Card>
 
-      <CardFooter>
-        <TaskStatus
-          status={status}
-          sortOrder={sortOrder}
-          onStatusChange={setStatus}
-          onSortChange={setSortOrder}
-          totalTasks={totalTasks}
-          activeTasks={activeTasks}
-        />
-      </CardFooter>
+      <Card className="w-full max-w-lg">
+        <CardContent className="space-y-2">
+          {tasks.map(task => (
+            <TaskItem
+              key={task.id}
+              task={task}
+              onToggle={toggleTask}
+              onDelete={deleteTask}
+              onEdit={handleEdit}
+            />
+          ))}
+          {tasks.length === 0 && (
+            <p className="text-center text-sm text-muted-foreground">
+              No tasks yet. Add one above!
+            </p>
+          )}
+        </CardContent>
+
+        <CardFooter>
+          <TaskStatus
+            status={status}
+            sortOrder={sortOrder}
+            onStatusChange={setStatus}
+            onSortChange={setSortOrder}
+            totalTasks={totalTasks}
+            activeTasks={activeTasks}
+          />
+        </CardFooter>
+      </Card>
 
       <AddTaskModal
         isOpen={isAddModalOpen}
@@ -88,6 +92,6 @@ export function TaskList() {
         task={editingTask}
         onEditTask={handleEditSubmit}
       />
-    </Card>
+    </div>
   );
 } 
