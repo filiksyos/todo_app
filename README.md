@@ -16,7 +16,7 @@ This application demonstrates the implementation of a blockchain-based todo list
   - Mark tasks as completed
   - Set due dates for tasks
 - **Task Organization**: 
-  - Filter tasks by status (completed/pending)
+  - Filter tasks by status (completed/active)
   - Sort tasks by due date
 - **Blockchain Security**: All data is stored securely on the Chromia blockchain
 
