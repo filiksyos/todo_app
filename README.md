@@ -124,7 +124,7 @@ NEXT_PUBLIC_BRID=<Your_BRID>
       1. Press `Windows + R`, type `services.msc` and press Enter
       2. Find "PostgreSQL Server" in the list
       3. Right-click and select "Stop" as shown below
-      ![Stopping PostgreSQL in Windows Services](screenshots/windows-postgresql-service.png)
+      ![Stopping PostgreSQL in Windows Services](todo_app/screenshots/windows-postgresql-service.png)
    - Linux: `sudo service postgresql stop`
    - macOS: `brew services stop postgresql`
 
@@ -147,7 +147,7 @@ chr node start --wipe
 6. Get your BRID from the startup logs and update your `.env` file:
    - Look for the BRID in the node startup logs
    - Copy the BRID value and paste it into your `.env` file's `NEXT_PUBLIC_BRID` field
-   ![Finding BRID in logs](screenshots/brid-location.png)
+   ![Finding BRID in logs](todo_app/screenshots/brid-location.png)
 
 7. Run tests:
 ```bash
