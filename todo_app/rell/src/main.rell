@@ -1,0 +1,76 @@
+module;
+
+import lib.ft4.auth;
+import lib.ft4.accounts.strategies.open;
+import lib.ft4.core.accounts.{ account, Account, create_account_with_auth, single_sig_auth_descriptor };
+
+@extend(auth.auth_handler)
+function () = auth.add_auth_handler(
+    flags = ["T"]
+);
+
+// ==========================================
+// TODO System Implementation
+// ==========================================
+
+entity todo_task {
+    key id: text, owner: account;
+    mutable title: text;
+    mutable description: text = "";
+    mutable due_date: text = "";
+    mutable completed: boolean = false;
+    created_at: text;
+}
+
+operation create_todo(
+    id: text,
+    title: text,
+    description: text?,
+    due_date: text?,
+    created_at: text
+) {
+    val owner = auth.authenticate();
+    create todo_task(
+        .id = id,
+        .owner = owner,
+        .title = title,
+        .description = if (empty(description)) "" else description,
+        .due_date = if (empty(due_date)) "" else due_date,
+        .completed = false,
+        .created_at = created_at
+    );
+}
+
+operation toggle_todo(id: text) {
+    val owner = auth.authenticate();
+    val task = todo_task @ { owner, .id == id };
+    task.completed = not(task.completed);
+}
+
+operation delete_todo(id: text) {
+    val owner = auth.authenticate();
+    delete todo_task @ { owner, .id == id };
+}
+
+operation edit_todo(
+    id: text,
+    title: text,
+    description: text?,
+    due_date: text?
+) {
+    val owner = auth.authenticate();
+    val task = todo_task @ { owner, .id == id };
+    task.title = title;
+    task.description = if (empty(description)) "" else description;
+    task.due_date = if (empty(due_date)) "" else due_date;
+}
+
+query get_todos(account_id: byte_array): list<(text, text, text, text, boolean, text)> {
+    val acc = account @ { .id == account_id };
+    return todo_task @* { .owner == acc } (
+        (.id, .title, .description, .due_date, .completed, .created_at)
+    );
+}
+
+
+
