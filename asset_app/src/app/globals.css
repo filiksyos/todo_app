@@ -64,41 +64,15 @@
     text-wrap: balance;
   }
 
-  .cube {
-    @apply absolute h-[7px] w-[7px] bg-cube content-[''];
-  }
-
   .card-background {
-    background-image: linear-gradient(hsl(var(--card)), hsl(var(--card))),
-      url(/border-image-2.png),
-      linear-gradient(hsl(var(--card)), hsl(var(--card)));
-    background-position: center, center, center;
-    background-size:
-      auto,
-      100% 100%,
-      auto;
-    background-repeat: no-repeat;
-    background-origin: padding-box, border-box, padding-box;
-    background-clip: padding-box, border-box, padding-box;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
   }
 
   .card-summary {
-    background-image: url(/finish-line.png),
-      linear-gradient(hsl(var(--card)), hsl(var(--card))),
-      url(/border-image.png),
-      linear-gradient(hsl(var(--card)), hsl(var(--card)));
-    background-position:
-      top left,
-      center,
-      center,
-      center;
-    background-size:
-      cover,
-      auto,
-      100% 100%,
-      auto;
-    background-repeat: no-repeat;
-    background-origin: padding-box, padding-box, border-box, padding-box;
-    background-clip: padding-box, padding-box, border-box, padding-box;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
   }
 }

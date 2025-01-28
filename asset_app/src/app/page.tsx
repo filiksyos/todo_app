@@ -6,7 +6,7 @@ import { CardLoading } from "@/components/layout/card-loading";
 import { publicClientConfig as clientConfig } from "@/utils/generate-client-config";
 import { TaskList } from "@/components/tasks/task-list";
 
-export default function TokenPage() {
+export default function HomePage() {
   const { data: ftAccounts, isLoading } = useFtAccounts({ clientConfig });
 
   return (
@@ -14,4 +14,4 @@ export default function TokenPage() {
       {isLoading ? <CardLoading /> : <TaskList />}
     </div>
   );
-}
+} 
