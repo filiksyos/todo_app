@@ -1,4 +1,4 @@
-# Chromia Todo APP
+# Chromia Todo App
 
 A multi-user todo list application built on the Chromia blockchain, allowing users to manage their tasks securely and efficiently through blockchain technology.
 
