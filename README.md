@@ -109,6 +109,14 @@ NEXT_PUBLIC_NODE_URL=http://localhost:7740
 NEXT_PUBLIC_BRID=<Your_BRID>
 ```
 
+> **Getting Your BRID:**
+> - The BRID is generated when you start your local Chromia node
+> - After running `chr node start --wipe`, look for the BRID in the startup logs
+> - You'll see it in the output after the node starts successfully
+> - Copy the BRID value from the logs and paste it into your `.env` file
+> - Note: The BRID will be different for each deployment, so don't share or commit your `.env` file
+> - A screenshot showing where to find the BRID in the logs is available at `docs/brid-location.png`
+
 ### Blockchain Setup
 
 > **Important Database Setup Notes:**
