@@ -2,7 +2,7 @@
 
 A multi-user todo list application built on the Chromia blockchain, allowing users to manage their tasks securely and efficiently through blockchain technology.
 
-![Todo List App Screenshot](todo_app/screenshots/app-overview.png)
+![Todo List App Screenshot](screenshots/app-overview.png)
 
 ## Overview
 
@@ -118,7 +118,7 @@ pnpm install
       1. Press `Windows + R`, type `services.msc` and press Enter
       2. Find "PostgreSQL Server" in the list
       3. Right-click and select "Stop" as shown below
-      ![Stopping PostgreSQL in Windows Services](todo_app/screenshots/windows-postgresql-service.png)
+      ![Stopping PostgreSQL in Windows Services](screenshots/windows-postgresql-service.png)
    - Linux: `sudo service postgresql stop`
    - macOS: `brew services stop postgresql`
 
@@ -154,7 +154,7 @@ NEXT_PUBLIC_BRID=<Your_BRID>
 Get your BRID from the startup logs and update your `.env` file:
    - Look for the BRID in the node startup logs
    - Copy the BRID value and paste it into your `.env` file's `NEXT_PUBLIC_BRID` field
-   ![Finding BRID in logs](todo_app/screenshots/brid-location.png)
+   ![Finding BRID in logs](screenshots/brid-location.png)
 
 
 
@@ -175,13 +175,13 @@ pnpm dev
 ## Usage Guide
 
 ### Account Creation
-![Account Creation](todo_app/screenshots/account-creation.png)
+![Account Creation](screenshots/account-creation.png)
 1. Click "Connect Wallet"
 2. Follow your wallet's prompts
 3. Your account will be created automatically
 
 ### Managing Tasks
-![Task Management](todo_app/screenshots/task-management.png)
+![Task Management](screenshots/task-management.png)
 1. Click "Add Task" to create new tasks
 2. Use checkboxes to mark tasks complete
 3. Click edit/delete icons to modify tasks
