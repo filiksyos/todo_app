@@ -111,11 +111,11 @@ NEXT_PUBLIC_BRID=<Your_BRID>
 
 > **Getting Your BRID:**
 > - The BRID is generated when you start your local Chromia node
-> - After running `chr node start --wipe`, look for the BRID in the startup logs
-> - You'll see it in the output after the node starts successfully
+> - After running `chr node start --wipe`, look for the BRID in the startup logs as shown in the screenshot below
 > - Copy the BRID value from the logs and paste it into your `.env` file
 > - Note: The BRID will be different for each deployment, so don't share or commit your `.env` file
-> - A screenshot showing where to find the BRID in the logs is available at `docs/brid-location.png`
+
+![Finding BRID in logs](screenshots/brid-location.png)
 
 ### Blockchain Setup
 
@@ -128,7 +128,11 @@ NEXT_PUBLIC_BRID=<Your_BRID>
 1. Ensure Docker is running on your system
 
 2. Stop your local PostgreSQL service if it's running (to avoid port conflicts):
-   - Windows: `net stop postgresql`
+   - Windows:
+      1. Press `Windows + R`, type `services.msc` and press Enter
+      2. Find "PostgreSQL Server" in the list
+      3. Right-click and select "Stop" as shown below
+      ![Stopping PostgreSQL in Windows Services](screenshots/windows-postgresql-service.png)
    - Linux: `sudo service postgresql stop`
    - macOS: `brew services stop postgresql`
 
@@ -185,7 +189,6 @@ pnpm dev
 ```bash
 pnpm build
 ```
-
 2. Update your `rell/chromia.yml`:
 ```yaml
 blockchains:
@@ -235,3 +238,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](todo_app/L
 ---
 
 Made with ❤️ using Chromia Blockchain Technology
+
