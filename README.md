@@ -93,8 +93,8 @@ The authentication process:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/chromia-todo-app.git
-cd chromia-todo-app
+git clone https://github.com/filiksyos/todo_app
+cd todo_app
 ```
 
 2. Install dependencies:
