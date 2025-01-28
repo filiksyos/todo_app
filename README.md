@@ -156,11 +156,7 @@ Get your BRID from the startup logs and update your `.env` file:
    - Copy the BRID value and paste it into your `.env` file's `NEXT_PUBLIC_BRID` field
    ![Finding BRID in logs](todo_app/screenshots/brid-location.png)
 
-7. Return to the `rell` directory and run tests:
-```bash
-cd ../rell
-chr test
-```
+
 
 ### Frontend Setup
 
