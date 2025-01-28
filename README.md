@@ -109,14 +109,6 @@ NEXT_PUBLIC_NODE_URL=http://localhost:7740
 NEXT_PUBLIC_BRID=<Your_BRID>
 ```
 
-> **Getting Your BRID:**
-> - The BRID is generated when you start your local Chromia node
-> - After running `chr node start --wipe`, look for the BRID in the startup logs as shown in the screenshot below
-> - Copy the BRID value from the logs and paste it into your `.env` file
-> - Note: The BRID will be different for each deployment, so don't share or commit your `.env` file
-
-![Finding BRID in logs](screenshots/brid-location.png)
-
 ### Blockchain Setup
 
 > **Important Database Setup Notes:**
@@ -152,7 +144,12 @@ chr install
 chr node start --wipe
 ```
 
-6. Run tests:
+6. Get your BRID from the startup logs and update your `.env` file:
+   - Look for the BRID in the node startup logs
+   - Copy the BRID value and paste it into your `.env` file's `NEXT_PUBLIC_BRID` field
+   ![Finding BRID in logs](screenshots/brid-location.png)
+
+7. Run tests:
 ```bash
 chr test
 ```
@@ -181,28 +178,6 @@ pnpm dev
 3. Click edit/delete icons to modify tasks
 4. Use filters to sort and organize tasks
 
-## Deployment
-
-### Hosting on Chromia Blockchain
-
-1. Build the frontend:
-```bash
-pnpm build
-```
-2. Update your `rell/chromia.yml`:
-```yaml
-blockchains:
-  todo_app:
-    webStatic: out
-```
-
-3. Update the blockchain:
-```bash
-chr node update
-```
-
-4. Access your dApp at: `http://localhost:7740/web_query/<blockchainRid>/web_static`
-
 ## Technologies Used
 
 - **Frontend**: Next.js, TailwindCSS, React Query
@@ -211,29 +186,11 @@ chr node update
 - **UI Components**: shadcn/ui, Radix
 - **Form Handling**: react-hook-form, zod
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ## Author
 
-Your Name
-- Email: your.email@example.com
+- Name: [Your Name]
+- Email: [your.email@example.com]
 - GitHub: [@yourusername](https://github.com/yourusername)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](todo_app/LICENSE.md) file for details.
-
-## Acknowledgments
-
-- Chromia team for the blockchain platform
-- The FT4 library developers
-- All contributors and testers
 
 ---
 
