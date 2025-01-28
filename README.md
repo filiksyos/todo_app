@@ -102,12 +102,6 @@ cd chromia-todo-app
 pnpm install
 ```
 
-3. Configure environment:
-Create a `.env` file based on `.env.example`:
-```bash
-NEXT_PUBLIC_NODE_URL=http://localhost:7740
-NEXT_PUBLIC_BRID=<Your_BRID>
-```
 
 ### Blockchain Setup
 
@@ -144,19 +138,38 @@ chr install
 chr node start --wipe
 ```
 
-6. Get your BRID from the startup logs and update your `.env` file:
+6. Return to the project root and configure environment:
+```bash
+cd ..
+```
+Create a `.env` file in the `todo_app` directory based on `.env.example`:
+```bash
+cd todo_app
+```
+Add the following to your `.env` file:
+```bash
+NEXT_PUBLIC_NODE_URL=http://localhost:7740
+NEXT_PUBLIC_BRID=<Your_BRID>
+```
+Get your BRID from the startup logs and update your `.env` file:
    - Look for the BRID in the node startup logs
    - Copy the BRID value and paste it into your `.env` file's `NEXT_PUBLIC_BRID` field
    ![Finding BRID in logs](todo_app/screenshots/brid-location.png)
 
-7. Run tests:
+7. Return to the `rell` directory and run tests:
 ```bash
+cd ../rell
 chr test
 ```
 
 ### Frontend Setup
 
-1. Start the development server:
+1. Ensure you're in the `todo_app` directory:
+```bash
+cd ../todo_app
+```
+
+2. Start the development server:
 ```bash
 pnpm dev
 ```
