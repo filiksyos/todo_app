@@ -122,26 +122,29 @@ pnpm install
    - Linux: `sudo service postgresql stop`
    - macOS: `brew services stop postgresql`
 
-3. Start the PostgreSQL container:
+3. Start Docker Desktop
+
+4. Start the PostgreSQL container:
 ```bash
 docker-compose up -d
 ```
 
-4. Install Chromia dependencies:
+5. Install Chromia dependencies:
 ```bash
-cd rell
 chr install
 ```
 
-5. Start the local node:
+6. Start the local node:
 ```bash
-chr node start --wipe
+chr node start
 ```
 
-6. Return to the project root and configure environment:
-```bash
-cd ..
-```
+7. Copy your BRID from the startup logs (you'll need this in the next step)
+   - Look for the BRID in the node startup logs
+   - Copy the BRID value
+   ![Finding BRID in logs](screenshots/brid-location.png)
+
+8. Open a new terminal and configure environment:
 Create a `.env` file in the `todo_app` directory based on `.env.example`:
 ```bash
 cd todo_app
@@ -151,24 +154,16 @@ Add the following to your `.env` file:
 NEXT_PUBLIC_NODE_URL=http://localhost:7740
 NEXT_PUBLIC_BRID=<Your_BRID>
 ```
-Get your BRID from the startup logs and update your `.env` file:
-   - Look for the BRID in the node startup logs
-   - Copy the BRID value and paste it into your `.env` file's `NEXT_PUBLIC_BRID` field
-   ![Finding BRID in logs](screenshots/brid-location.png)
-
-
+Paste the BRID you copied earlier into the `NEXT_PUBLIC_BRID` field.
 
 ### Frontend Setup
 
-1. Ensure you're in the `todo_app` directory:
-```bash
-cd ../todo_app
-```
-
-2. Start the development server:
+1. In the same terminal where you created the `.env` file:
 ```bash
 pnpm dev
 ```
+
+> **Note**: Please wait patiently while the application compiles. The first compilation may take a few minutes as it builds all the necessary components.
 
 2. Access the application at `http://localhost:3000`
 
@@ -197,9 +192,9 @@ pnpm dev
 
 ## Author
 
-- Name: [Your Name]
-- Email: [your.email@example.com]
-- GitHub: [@yourusername](https://github.com/yourusername)
+- Name: Filiksyos Destaw
+- Email: franknick285@gmail.com
+- GitHub: [@filiksyos](https://github.com/filiksyos)
 
 ---
 
