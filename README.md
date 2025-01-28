@@ -10,7 +10,7 @@ This application demonstrates the implementation of a blockchain-based todo list
 
 ### Features
 
-- **User Authentication**: Secure login via MetaMask wallet integration
+- **User Authentication**: Secure login via EVM wallet integration (MetaMask, WalletConnect, etc.)
 - **Task Management**: 
   - Create, update, and delete tasks
   - Mark tasks as completed
@@ -84,8 +84,10 @@ The authentication process:
 
 - Node.js (v23 or higher)
 - pnpm (v9 or higher)
-- MetaMask wallet
+- An EVM-compatible wallet (MetaMask, WalletConnect, etc.)
 - Chrome/Firefox browser
+- Docker and Docker Compose
+- PostgreSQL (optional, only if running locally without Docker)
 
 ### Installation
 
@@ -109,18 +111,36 @@ NEXT_PUBLIC_BRID=<Your_BRID>
 
 ### Blockchain Setup
 
-1. Install Chromia dependencies:
+> **Important Database Setup Notes:**
+> - The Chromia node requires PostgreSQL to store blockchain data
+> - We use Docker to ensure a consistent PostgreSQL environment
+> - Port 5432 must be available for the PostgreSQL container
+> - Any local PostgreSQL service must be stopped to avoid port conflicts
+
+1. Ensure Docker is running on your system
+
+2. Stop your local PostgreSQL service if it's running (to avoid port conflicts):
+   - Windows: `net stop postgresql`
+   - Linux: `sudo service postgresql stop`
+   - macOS: `brew services stop postgresql`
+
+3. Start the PostgreSQL container:
+```bash
+docker-compose up -d
+```
+
+4. Install Chromia dependencies:
 ```bash
 cd rell
 chr install
 ```
 
-2. Start the local node:
+5. Start the local node:
 ```bash
 chr node start --wipe
 ```
 
-3. Run tests:
+6. Run tests:
 ```bash
 chr test
 ```
@@ -139,7 +159,7 @@ pnpm dev
 ### Account Creation
 ![Account Creation](todo_app/screenshots/account-creation.png)
 1. Click "Connect Wallet"
-2. Follow MetaMask prompts
+2. Follow your wallet's prompts
 3. Your account will be created automatically
 
 ### Managing Tasks
