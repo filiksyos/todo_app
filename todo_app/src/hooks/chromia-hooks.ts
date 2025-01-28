@@ -63,9 +63,9 @@ export const useChromiaAccount = ({
       // Guard clause: ensure all required data is available
       if (!ethAddress || !keyStore || !client) return;
 
-      // Create authentication descriptor with Account and Transfer permissions
+      // Create authentication descriptor with Account, Transfer, and Zero permissions
       const ad = createSingleSigAuthDescriptorRegistration(
-        [AuthFlag.Account, AuthFlag.Transfer],
+        [AuthFlag.Account, AuthFlag.Transfer, "0"],
         keyStore.id,
       );
 

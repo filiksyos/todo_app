@@ -1,18 +1,32 @@
 module;
 
+// Import required FT4 libraries for authentication and account management
 import lib.ft4.auth;
 import lib.ft4.accounts.strategies.open;
 import lib.ft4.core.accounts.{ account, Account, create_account_with_auth, single_sig_auth_descriptor };
 
+// Configure authentication handler with specific flags
+// T: Transaction flag
+// 0: Zero flag
 @extend(auth.auth_handler)
 function () = auth.add_auth_handler(
-    flags = ["T"]
+    flags = ["T", "0"]
 );
 
 // ==========================================
 // TODO System Implementation
 // ==========================================
 
+/**
+ * Entity representing a todo task
+ * - id: Unique identifier for the task
+ * - owner: Account that owns the task
+ * - title: Task title
+ * - description: Optional task description
+ * - due_date: Optional due date for the task
+ * - completed: Task completion status
+ * - created_at: Task creation timestamp
+ */
 entity todo_task {
     key id: text, owner: account;
     mutable title: text;
@@ -22,6 +36,14 @@ entity todo_task {
     created_at: text;
 }
 
+/**
+ * Creates a new todo task for the authenticated user
+ * @param id - Unique identifier for the task
+ * @param title - Task title
+ * @param description - Optional task description
+ * @param due_date - Optional due date
+ * @param created_at - Creation timestamp
+ */
 operation create_todo(
     id: text,
     title: text,
@@ -41,17 +63,32 @@ operation create_todo(
     );
 }
 
+/**
+ * Toggles the completion status of a todo task
+ * @param id - ID of the task to toggle
+ */
 operation toggle_todo(id: text) {
     val owner = auth.authenticate();
     val task = todo_task @ { owner, .id == id };
     task.completed = not(task.completed);
 }
 
+/**
+ * Deletes a todo task
+ * @param id - ID of the task to delete
+ */
 operation delete_todo(id: text) {
     val owner = auth.authenticate();
     delete todo_task @ { owner, .id == id };
 }
 
+/**
+ * Updates an existing todo task
+ * @param id - ID of the task to edit
+ * @param title - New task title
+ * @param description - New optional task description
+ * @param due_date - New optional due date
+ */
 operation edit_todo(
     id: text,
     title: text,
@@ -65,6 +102,11 @@ operation edit_todo(
     task.due_date = if (empty(due_date)) "" else due_date;
 }
 
+/**
+ * Retrieves all todo tasks for a specific account
+ * @param account_id - Account ID to fetch todos for
+ * @return List of tuples containing task details (id, title, description, due_date, completed, created_at)
+ */
 query get_todos(account_id: byte_array): list<(text, text, text, text, boolean, text)> {
     val acc = account @ { .id == account_id };
     return todo_task @* { .owner == acc } (
