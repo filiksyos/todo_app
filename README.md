@@ -82,8 +82,11 @@ The authentication process:
 
 ### Prerequisites
 
-- Node.js (v23 or higher)
-- pnpm (v9 or higher)
+- Node.js (v20 or higher)
+- Package manager (one of the following):
+  - pnpm (v9 or higher) - recommended
+  - npm (v10 or higher)
+  - yarn (v1.22 or higher)
 - An EVM-compatible wallet (MetaMask, WalletConnect, etc.)
 - Chrome/Firefox browser
 - Docker and Docker Compose
@@ -97,11 +100,22 @@ git clone https://github.com/filiksyos/todo_app
 cd todo_app
 ```
 
-2. Install dependencies:
+2. Install dependencies using your preferred package manager:
+
+Using pnpm (recommended):
 ```bash
 pnpm install
 ```
 
+Using npm:
+```bash
+npm install
+```
+
+Using yarn:
+```bash
+yarn install
+```
 
 ### Blockchain Setup
 
@@ -158,9 +172,21 @@ Paste the BRID you copied earlier into the `NEXT_PUBLIC_BRID` field.
 
 ### Frontend Setup
 
-1. In the same terminal where you created the `.env` file:
+1. In the same terminal where you created the `.env` file, start the development server using your package manager:
+
+Using pnpm (recommended):
 ```bash
 pnpm dev
+```
+
+Using npm:
+```bash
+npm run dev
+```
+
+Using yarn:
+```bash
+yarn dev
 ```
 
 > **Note**: Please wait patiently while the application compiles. The first compilation may take a few minutes as it builds all the necessary components.
