@@ -87,6 +87,16 @@ The authentication process:
 - An EVM-compatible wallet (MetaMask, WalletConnect, etc.)
 - Chrome/Firefox browser
 
+### Blockchain Setup
+
+> **Important Database Setup Notes:**
+> - The Chromia node requires PostgreSQL to store blockchain data
+> - We use Docker to ensure a consistent PostgreSQL environment
+> - Port 5432 must be available for the PostgreSQL container
+> - Any local PostgreSQL service must be stopped to avoid port conflicts
+
+For more details about the blockchain setup and configuration, refer to the [Chromia Documentation](https://docs.chromia.com).
+
 ### Docker Architecture and Setup
 
 #### Why Docker?
@@ -245,15 +255,6 @@ The application should now be running at `http://localhost:3000`
 
 > **Note**: Please wait patiently while the application compiles. The first compilation may take a few minutes as it builds all the necessary components.
 
-### Blockchain Setup
-
-> **Important Database Setup Notes:**
-> - The Chromia node requires PostgreSQL to store blockchain data
-> - We use Docker to ensure a consistent PostgreSQL environment
-> - Port 5432 must be available for the PostgreSQL container
-> - Any local PostgreSQL service must be stopped to avoid port conflicts
-
-For more details about the blockchain setup and configuration, refer to the [Chromia Documentation](https://docs.chromia.com).
 
 ## Usage Guide
 
