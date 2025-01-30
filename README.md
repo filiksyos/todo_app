@@ -82,240 +82,97 @@ The authentication process:
 
 ### Prerequisites
 
-- Node.js (v18.0.0 or higher)
-- Package manager (any of the following):
-  - npm (v8 or higher)
-  - yarn (v1.22 or higher)
-  - pnpm (v7 or higher)
-- An EVM-compatible wallet (MetaMask, WalletConnect, etc.)
+- Docker Desktop
 - Chrome/Firefox browser
-- Docker and Docker Compose
-- PostgreSQL (optional, only if running locally without Docker)
+- An EVM-compatible wallet (MetaMask, WalletConnect, etc.)
 
-### Docker Architecture and Setup
+### Installation and Setup
 
-#### Why Docker?
-
-We use Docker in this project for several key benefits:
-1. **Consistency**: Ensures the same development environment across all machines
-2. **Isolation**: Separates services and their dependencies
-3. **Scalability**: Easy to scale services independently
-4. **Dependencies**: Handles complex dependencies like Node.js, PostgreSQL without local installation
-5. **Production-Ready**: Same container can be used in development and production
-
-#### Project Docker Architecture
-
-```mermaid
-graph TD
-    subgraph "Docker Environment"
-        subgraph "Web Service Container"
-            A[Next.js App] -->|Uses| B[Node.js Runtime]
-            B -->|Builds| C[Production Build]
-            A -->|Development Mode| D[Hot Reloading]
-        end
-        
-        subgraph "Database Container"
-            E[PostgreSQL] -->|Stores| F[Blockchain Data]
-            E -->|Persists| G[Volume Mount]
-        end
-        
-        A -->|Connects to| E
-    end
-    
-    H[Developer] -->|Interacts with| A
-    H -->|Manages| I[Docker Compose]
-    I -->|Controls| A
-    I -->|Controls| E
-```
-
-#### Docker Setup Instructions
-
-1. **Start PostgreSQL Container**:
-```bash
-docker compose up postgres -d
-```
-
-2. **Start Development Web Server**:
-```bash
-docker compose up web-dev --build
-```
-
-> **Note**: The `--build` flag ensures the container is rebuilt with the latest changes.
-
-#### Important Docker Commands
-
-- **View Logs**:
-```bash
-docker compose logs -f web-dev  # For web service logs
-docker compose logs -f postgres # For database logs
-```
-
-- **Stop Services**:
-```bash
-docker compose down  # Stops all services
-```
-
-- **Rebuild Specific Service**:
-```bash
-docker compose up web-dev --build  # Rebuilds and starts web service
-```
-
-- **Clean Up**:
-```bash
-docker compose down -v  # Removes containers and volumes
-```
-
-#### Docker Configuration
-
-The project uses two main services:
-
-1. **web-dev**: Next.js application
-   - Development mode with hot reloading
-   - Node.js 20 Alpine base
-   - Automatic dependency installation
-   - Volume mounted source code
-
-2. **postgres**: Database service
-   - PostgreSQL 15
-   - Persistent volume for data storage
-   - Configured for Chromia blockchain
-
-#### Troubleshooting Docker
-
-If you encounter issues:
-
-1. **Port Conflicts**:
-   - Ensure ports 3000 (web) and 5432 (postgres) are available
-   - Stop any local services using these ports
-
-2. **Build Failures**:
-   - Clear Docker cache: `docker builder prune`
-   - Rebuild with no cache: `docker compose build --no-cache`
-
-3. **Performance Issues**:
-   - Increase Docker resources in Docker Desktop settings
-   - Use volume caching for better performance
-
-### Package Manager Compatibility
-
-This project supports multiple package managers. Choose the one you prefer:
-
-```bash
-# Using npm
-npm install
-npm run dev
-
-# Using yarn
-yarn install
-yarn dev
-
-# Using pnpm
-pnpm install
-pnpm dev
-```
-
-> **Note**: The project includes `.npmrc` configuration to ensure consistent behavior across different package managers.
-
-### Installation
-
-1. Clone the repository:
+1. **Clone the repository**:
 ```bash
 git clone https://github.com/filiksyos/todo_app
 cd todo_app
 ```
 
-2. Install dependencies using your preferred package manager:
+2. **Start Docker Desktop**
+   - Ensure Docker Desktop is running on your system
+   - For Windows users: Make sure WSL2 is properly configured
 
-Using pnpm (recommended):
-```bash
-pnpm install
-```
-
-Using npm:
-```bash
-npm install
-```
-
-Using yarn:
-```bash
-yarn install
-```
-
-### Blockchain Setup
-
-> **Important Database Setup Notes:**
-> - The Chromia node requires PostgreSQL to store blockchain data
-> - We use Docker to ensure a consistent PostgreSQL environment
-> - Port 5432 must be available for the PostgreSQL container
-> - Any local PostgreSQL service must be stopped to avoid port conflicts
-
-1. Ensure Docker is running on your system
-
-2. Stop your local PostgreSQL service if it's running (to avoid port conflicts):
+3. **Stop any local PostgreSQL service** (to avoid port conflicts):
    - Windows:
       1. Press `Windows + R`, type `services.msc` and press Enter
       2. Find "PostgreSQL Server" in the list
-      3. Right-click and select "Stop" as shown below
-      ![Stopping PostgreSQL in Windows Services](screenshots/windows-postgresql-service.png)
+      3. Right-click and select "Stop"
    - Linux: `sudo service postgresql stop`
    - macOS: `brew services stop postgresql`
 
-3. Start Docker Desktop
-
-4. Start the PostgreSQL container:
+4. **Start the PostgreSQL container**:
 ```bash
-docker-compose up -d
+docker compose up postgres -d
 ```
 
-5. Install Chromia dependencies:
+5. **Start the development server**:
 ```bash
-chr install
+docker compose up web-dev --build
 ```
 
-6. Start the local node:
-```bash
-chr node start
-```
-
-7. Copy your BRID from the startup logs (you'll need this in the next step)
-   - Look for the BRID in the node startup logs
-   - Copy the BRID value
-   ![Finding BRID in logs](screenshots/brid-location.png)
-
-8. Open a new terminal and configure environment:
-Create a `.env` file in the `todo_app` directory based on `.env.example`:
-```bash
-cd todo_app
-```
-Add the following to your `.env` file:
+6. **Configure environment**:
+   Create a `.env` file in the project root:
 ```bash
 NEXT_PUBLIC_NODE_URL=http://localhost:7740
-NEXT_PUBLIC_BRID=<Your_BRID>
+NEXT_PUBLIC_BRID=<Your_BRID>  # You'll get this from the startup logs
 ```
-Paste the BRID you copied earlier into the `NEXT_PUBLIC_BRID` field.
 
-### Frontend Setup
+7. **Access the application**:
+   - Open your browser and navigate to `http://localhost:3000`
+   - Connect your MetaMask wallet when prompted
 
-1. In the same terminal where you created the `.env` file, start the development server using your package manager:
+### Important Commands
 
-Using pnpm (recommended):
+- **View application logs**:
 ```bash
-pnpm dev
+docker compose logs -f web-dev
 ```
 
-Using npm:
+- **View database logs**:
 ```bash
-npm run dev
+docker compose logs -f postgres
 ```
 
-Using yarn:
+- **Stop all services**:
 ```bash
-yarn dev
+docker compose down
 ```
 
-> **Note**: Please wait patiently while the application compiles. The first compilation may take a few minutes as it builds all the necessary components.
+- **Rebuild after code changes**:
+```bash
+docker compose up web-dev --build
+```
 
-2. Access the application at `http://localhost:3000`
+### Troubleshooting
+
+1. **If the build fails**:
+```bash
+# Clean Docker cache
+docker builder prune
+# Rebuild without cache
+docker compose build --no-cache web-dev
+```
+
+2. **If ports are in use**:
+   - Ensure ports 3000 and 5432 are available
+   - Stop any local services using these ports
+   - Check running containers: `docker ps`
+
+3. **For Windows users**:
+   - Use semicolons (`;`) instead of ampersands (`&&`) in PowerShell
+   - Ensure Docker Desktop is using WSL2
+   - If file watching isn't working, enable polling in Docker Desktop settings
+
+4. **Performance issues**:
+   - Increase Docker resources in Docker Desktop settings
+   - Check CPU and memory usage
+   - Consider using volume caching
 
 ## Usage Guide
 
