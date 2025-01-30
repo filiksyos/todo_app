@@ -1,13 +1,11 @@
 import { useCallback, useState } from "react";
 
-// Import required Chromia FT4 functionality for account management and authentication
 import {
   AuthFlag,
   createSingleSigAuthDescriptorRegistration,
   registerAccount,
   registrationStrategy,
 } from "@chromia/ft4";
-// Import Chromia React hooks and utilities
 import {
   createChromiaHooks,
   useEvmKeyStore,

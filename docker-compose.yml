@@ -1,4 +1,40 @@
+version: '3.8'
+
 services:
+  # Development service
+  web-dev:
+    build:
+      context: .
+      target: dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app:cached
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+      - NEXT_DISABLE_ESLINT=1
+      - WATCHPACK_POLLING=true  # Enable file watching on Windows
+      - CHOKIDAR_USEPOLLING=true  # Better file watching on Windows
+    command: pnpm dev
+    # Improve container cleanup
+    stop_grace_period: 1s
+    init: true
+
+  # Production service
+  web-prod:
+    build:
+      context: .
+      target: prod
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+    init: true
+
   postgres:
     image: postgres:16.3
     container_name: new_container
@@ -11,5 +47,6 @@ services:
       - "5432:5432"
     volumes:
       - chromi_postgres_data:/var/lib/postgresql/data
+
 volumes:
   chromi_postgres_data:

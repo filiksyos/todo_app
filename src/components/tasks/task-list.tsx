@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { Plus } from "lucide-react";
+
+import Button from "@/components/chromia-ui-kit/button";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
-import { useTasks, Task } from "@/hooks/use-tasks";
-import { TaskItem } from "./task-item";
-import { TaskStatus } from "./task-status";
 import { AddTaskModal } from "@/modals/add-task-modal";
 import { EditTaskModal } from "@/modals/edit-task-modal";
-import Button from "@/components/chromia-ui-kit/button";
-import { Plus } from "lucide-react";
+import { TaskItem } from "./task-item";
+import { TaskStatus } from "./task-status";
+import { useTasks, Task } from "@/hooks/use-tasks";
 
 export function TaskList() {
   const {

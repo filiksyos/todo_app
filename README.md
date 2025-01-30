@@ -82,15 +82,35 @@ The authentication process:
 
 ### Prerequisites
 
-- Node.js (v20 or higher)
-- Package manager (one of the following):
-  - pnpm (v9 or higher) - recommended
-  - npm (v10 or higher)
+- Node.js (v18.0.0 or higher)
+- Package manager (any of the following):
+  - npm (v8 or higher)
   - yarn (v1.22 or higher)
+  - pnpm (v7 or higher)
 - An EVM-compatible wallet (MetaMask, WalletConnect, etc.)
 - Chrome/Firefox browser
 - Docker and Docker Compose
 - PostgreSQL (optional, only if running locally without Docker)
+
+### Package Manager Compatibility
+
+This project supports multiple package managers. Choose the one you prefer:
+
+```bash
+# Using npm
+npm install
+npm run dev
+
+# Using yarn
+yarn install
+yarn dev
+
+# Using pnpm
+pnpm install
+pnpm dev
+```
+
+> **Note**: The project includes `.npmrc` configuration to ensure consistent behavior across different package managers.
 
 ### Installation
 

@@ -1,10 +1,12 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import Button from "@/components/chromia-ui-kit/button";
+import { Input } from "@/components/ui/input";
+
+import { cn } from "@/lib/utils";
 
 interface AddTaskModalProps {
   isOpen: boolean;

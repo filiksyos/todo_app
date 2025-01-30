@@ -1,8 +1,8 @@
 "use client";
 
-import { Task } from "@/hooks/use-tasks";
 import { Trash2, Edit } from "lucide-react";
 import Button from "@/components/chromia-ui-kit/button";
+import { Task } from "@/hooks/use-tasks";
 import { cn } from "@/utils/cn";
 import { motion } from "framer-motion";
 

@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-
 import { useAccount, useConnectors } from "wagmi";
 
 export const useEthereumProvider = () => {

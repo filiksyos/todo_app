@@ -1,5 +1,5 @@
 blockchains:
-  asset_management:
+  todo_app:
     module: main
     moduleArgs:
       main:
