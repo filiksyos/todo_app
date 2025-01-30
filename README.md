@@ -92,6 +92,110 @@ The authentication process:
 - Docker and Docker Compose
 - PostgreSQL (optional, only if running locally without Docker)
 
+### Docker Architecture and Setup
+
+#### Why Docker?
+
+We use Docker in this project for several key benefits:
+1. **Consistency**: Ensures the same development environment across all machines
+2. **Isolation**: Separates services and their dependencies
+3. **Scalability**: Easy to scale services independently
+4. **Dependencies**: Handles complex dependencies like Node.js, PostgreSQL without local installation
+5. **Production-Ready**: Same container can be used in development and production
+
+#### Project Docker Architecture
+
+```mermaid
+graph TD
+    subgraph "Docker Environment"
+        subgraph "Web Service Container"
+            A[Next.js App] -->|Uses| B[Node.js Runtime]
+            B -->|Builds| C[Production Build]
+            A -->|Development Mode| D[Hot Reloading]
+        end
+        
+        subgraph "Database Container"
+            E[PostgreSQL] -->|Stores| F[Blockchain Data]
+            E -->|Persists| G[Volume Mount]
+        end
+        
+        A -->|Connects to| E
+    end
+    
+    H[Developer] -->|Interacts with| A
+    H -->|Manages| I[Docker Compose]
+    I -->|Controls| A
+    I -->|Controls| E
+```
+
+#### Docker Setup Instructions
+
+1. **Start PostgreSQL Container**:
+```bash
+docker compose up postgres -d
+```
+
+2. **Start Development Web Server**:
+```bash
+docker compose up web-dev --build
+```
+
+> **Note**: The `--build` flag ensures the container is rebuilt with the latest changes.
+
+#### Important Docker Commands
+
+- **View Logs**:
+```bash
+docker compose logs -f web-dev  # For web service logs
+docker compose logs -f postgres # For database logs
+```
+
+- **Stop Services**:
+```bash
+docker compose down  # Stops all services
+```
+
+- **Rebuild Specific Service**:
+```bash
+docker compose up web-dev --build  # Rebuilds and starts web service
+```
+
+- **Clean Up**:
+```bash
+docker compose down -v  # Removes containers and volumes
+```
+
+#### Docker Configuration
+
+The project uses two main services:
+
+1. **web-dev**: Next.js application
+   - Development mode with hot reloading
+   - Node.js 20 Alpine base
+   - Automatic dependency installation
+   - Volume mounted source code
+
+2. **postgres**: Database service
+   - PostgreSQL 15
+   - Persistent volume for data storage
+   - Configured for Chromia blockchain
+
+#### Troubleshooting Docker
+
+If you encounter issues:
+
+1. **Port Conflicts**:
+   - Ensure ports 3000 (web) and 5432 (postgres) are available
+   - Stop any local services using these ports
+
+2. **Build Failures**:
+   - Clear Docker cache: `docker builder prune`
+   - Rebuild with no cache: `docker compose build --no-cache`
+
+3. **Performance Issues**:
+   - Increase Docker resources in Docker Desktop settings
+   - Use volume caching for better performance
+
 ### Package Manager Compatibility
 
 This project supports multiple package managers. Choose the one you prefer:
