@@ -83,22 +83,123 @@ The authentication process:
 ### Prerequisites
 
 - Docker Desktop
-- Chrome/Firefox browser
+- Docker Compose
 - An EVM-compatible wallet (MetaMask, WalletConnect, etc.)
+- Chrome/Firefox browser
 
-### Installation and Setup
+### Docker Architecture and Setup
 
-1. **Clone the repository**:
+#### Why Docker?
+
+We use Docker in this project for several key benefits:
+1. **Consistency**: Ensures the same development environment across all machines
+2. **Isolation**: Separates services and their dependencies
+3. **Scalability**: Easy to scale services independently
+4. **Dependencies**: Handles complex dependencies like Node.js, PostgreSQL without local installation
+5. **Production-Ready**: Same container can be used in development and production
+
+#### Project Docker Architecture
+
+```mermaid
+graph TD
+    subgraph "Docker Environment"
+        subgraph "Web Service Container"
+            A[Next.js App] -->|Uses| B[Node.js Runtime]
+            B -->|Builds| C[Production Build]
+            A -->|Development Mode| D[Hot Reloading]
+        end
+        
+        subgraph "Database Container"
+            E[PostgreSQL] -->|Stores| F[Blockchain Data]
+            E -->|Persists| G[Volume Mount]
+        end
+        
+        A -->|Connects to| E
+    end
+    
+    H[Developer] -->|Interacts with| A
+    H -->|Manages| I[Docker Compose]
+    I -->|Controls| A
+    I -->|Controls| E
+```
+
+#### Docker Setup Instructions
+
+1. **Start PostgreSQL Container**:
+```bash
+docker compose up postgres -d
+```
+
+2. **Start Development Web Server**:
+```bash
+docker compose up web-dev --build
+```
+
+> **Note**: The `--build` flag ensures the container is rebuilt with the latest changes.
+
+#### Important Docker Commands
+
+- **View Logs**:
+```bash
+docker compose logs -f web-dev  # For web service logs
+docker compose logs -f postgres # For database logs
+```
+
+- **Stop Services**:
+```bash
+docker compose down  # Stops all services
+```
+
+- **Rebuild Specific Service**:
+```bash
+docker compose up web-dev --build  # Rebuilds and starts web service
+```
+
+- **Clean Up**:
+```bash
+docker compose down -v  # Removes containers and volumes
+```
+
+#### Docker Configuration
+
+The project uses two main services:
+
+1. **web-dev**: Next.js application
+   - Development mode with hot reloading
+   - Node.js 20 Alpine base
+   - Automatic dependency installation
+   - Volume mounted source code
+
+2. **postgres**: Database service
+   - PostgreSQL 15
+   - Persistent volume for data storage
+   - Configured for Chromia blockchain
+
+#### Troubleshooting Docker
+
+If you encounter issues:
+
+1. **Port Conflicts**:
+   - Ensure ports 3000 (web) and 5432 (postgres) are available
+   - Stop any local services using these ports
+
+2. **Build Failures**:
+   - Clear Docker cache: `docker builder prune`
+   - Rebuild with no cache: `docker compose build --no-cache`
+
+3. **Performance Issues**:
+   - Increase Docker resources in Docker Desktop settings
+   - Use volume caching for better performance
+
+### Installation
+
+1. Clone the repository:
 ```bash
 git clone https://github.com/filiksyos/todo_app
 cd todo_app
 ```
 
-2. **Start Docker Desktop**
-   - Ensure Docker Desktop is running on your system
-   - For Windows users: Make sure WSL2 is properly configured
-
-3. **Stop any local PostgreSQL service** (to avoid port conflicts):
+2. Stop your local PostgreSQL service if it's running (to avoid port conflicts):
    - Windows:
       1. Press `Windows + R`, type `services.msc` and press Enter
       2. Find "PostgreSQL Server" in the list
@@ -106,73 +207,50 @@ cd todo_app
    - Linux: `sudo service postgresql stop`
    - macOS: `brew services stop postgresql`
 
-4. **Start the PostgreSQL container**:
+3. Install Chromia dependencies:
+```bash
+chr install
+```
+
+4. Start the local Chromia node:
+```bash
+chr node start
+```
+
+5. Copy your BRID from the startup logs and create the environment configuration:
+   - Look for the BRID in the node startup logs
+   - Create a `.env` file in the project root based on `.env.example`:
+   ```bash
+   NEXT_PUBLIC_NODE_URL=http://localhost:7740
+   NEXT_PUBLIC_BRID=<Your_BRID>
+   ```
+   - Paste the BRID you copied from the logs
+
+6. Start Docker Desktop and ensure it's running
+
+7. Start the PostgreSQL container:
 ```bash
 docker compose up postgres -d
 ```
 
-5. **Start the development server**:
+8. Start the development web server:
 ```bash
 docker compose up web-dev --build
 ```
 
-6. **Configure environment**:
-   Create a `.env` file in the project root:
-```bash
-NEXT_PUBLIC_NODE_URL=http://localhost:7740
-NEXT_PUBLIC_BRID=<Your_BRID>  # You'll get this from the startup logs
-```
+The application should now be running at `http://localhost:3000`
 
-7. **Access the application**:
-   - Open your browser and navigate to `http://localhost:3000`
-   - Connect your MetaMask wallet when prompted
+> **Note**: Please wait patiently while the application compiles. The first compilation may take a few minutes as it builds all the necessary components.
 
-### Important Commands
+### Blockchain Setup
 
-- **View application logs**:
-```bash
-docker compose logs -f web-dev
-```
+> **Important Database Setup Notes:**
+> - The Chromia node requires PostgreSQL to store blockchain data
+> - We use Docker to ensure a consistent PostgreSQL environment
+> - Port 5432 must be available for the PostgreSQL container
+> - Any local PostgreSQL service must be stopped to avoid port conflicts
 
-- **View database logs**:
-```bash
-docker compose logs -f postgres
-```
-
-- **Stop all services**:
-```bash
-docker compose down
-```
-
-- **Rebuild after code changes**:
-```bash
-docker compose up web-dev --build
-```
-
-### Troubleshooting
-
-1. **If the build fails**:
-```bash
-# Clean Docker cache
-docker builder prune
-# Rebuild without cache
-docker compose build --no-cache web-dev
-```
-
-2. **If ports are in use**:
-   - Ensure ports 3000 and 5432 are available
-   - Stop any local services using these ports
-   - Check running containers: `docker ps`
-
-3. **For Windows users**:
-   - Use semicolons (`;`) instead of ampersands (`&&`) in PowerShell
-   - Ensure Docker Desktop is using WSL2
-   - If file watching isn't working, enable polling in Docker Desktop settings
-
-4. **Performance issues**:
-   - Increase Docker resources in Docker Desktop settings
-   - Check CPU and memory usage
-   - Consider using volume caching
+For more details about the blockchain setup and configuration, refer to the [Chromia Documentation](https://docs.chromia.com).
 
 ## Usage Guide
 
