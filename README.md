@@ -203,7 +203,8 @@ cd todo_app
    - Windows:
       1. Press `Windows + R`, type `services.msc` and press Enter
       2. Find "PostgreSQL Server" in the list
-      3. Right-click and select "Stop"
+      3. Right-click and select "Stop" as shown below
+      ![Stopping PostgreSQL in Windows Services](screenshots/windows-postgresql-service.png)
    - Linux: `sudo service postgresql stop`
    - macOS: `brew services stop postgresql`
 
@@ -219,6 +220,8 @@ chr node start
 
 5. Copy your BRID from the startup logs and create the environment configuration:
    - Look for the BRID in the node startup logs
+   - Copy the BRID value as shown below
+   ![Finding BRID in logs](screenshots/brid-location.png)
    - Create a `.env` file in the project root based on `.env.example`:
    ```bash
    NEXT_PUBLIC_NODE_URL=http://localhost:7740
