@@ -8,6 +8,8 @@ A multi-user todo list application built on the Chromia blockchain, allowing use
 
 This application demonstrates the implementation of a blockchain-based todo list using Chromia technology. Users can create accounts, manage their tasks, and track their progress - all secured by blockchain technology.
 
+> 📱 **Additional Implementation**: I have also created an [Android version](https://github.com/filiksyos/androidtodo) of this application to demonstrate cross-platform capabilities with Chromia blockchain technology. The Android version showcases how Chromia can be integrated into mobile applications while handling platform-specific challenges.
+
 ### Features
 
 - **User Authentication**: Secure login via EVM wallet integration (MetaMask, WalletConnect, etc.)
